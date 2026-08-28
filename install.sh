@@ -183,7 +183,6 @@ Done. Two things this script deliberately leaves to you:
 
   Packages   Read packages.txt first, then:
                sudo pacman -S --needed - < packages.txt
-             and install `throttled` from the AUR.
 
   Power      The undervolt values are specific to one CPU sample, and too
              large a value panics the kernel. Read .config/power/throttled.conf

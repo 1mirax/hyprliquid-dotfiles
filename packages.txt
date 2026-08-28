@@ -3,8 +3,7 @@
 #
 #   sudo pacman -S --needed - < packages.txt
 #
-# "throttled" comes from the AUR, so install it with an AUR helper (paru, yay)
-# rather than pacman. Everything else is in the official repositories.
+# Every package here is in the official repositories - nothing needs the AUR.
 
 # --- compositor and session ---------------------------------------------
 hyprland
@@ -43,7 +42,7 @@ starship
 
 # --- power management (see .config/power/install.sh) --------------------
 tlp
-# throttled                 # AUR: undervolt and HWP control for this ThinkPad
+throttled                   # extra/ - undervolt and HWP control for this ThinkPad
 
 # --- libraries the scripts and bar link against -------------------------
 python-gobject              # fix-oversized-icons.py uses GdkPixbuf

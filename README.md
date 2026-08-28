@@ -28,7 +28,7 @@ differently from every guide you will find — those are all commented in place.
 git clone https://github.com/1mirax/hyprliquid-dotfiles ~/Projects/hyprliquid-dotfiles
 cd ~/Projects/hyprliquid-dotfiles
 
-sudo pacman -S --needed - < packages.txt   # read it first
+sudo pacman -S --needed - < packages.txt   # read it first; no AUR needed
 ./install.sh --dry-run                     # see exactly what will happen
 ./install.sh
 ```
