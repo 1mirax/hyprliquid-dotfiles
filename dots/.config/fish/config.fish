@@ -4,31 +4,39 @@ set -g fish_greeting ''
 
 if status is-interactive
     # --- Syntax colors (iOS system palette, no default green) ---
-    # Neutral palette, matching kitty's. Tokens are told apart by lightness
-    # and a faint temperature bias, not by hue: commands are the brightest
-    # thing on the line, arguments plain, everything structural dimmer.
-    # Red is the only saturated colour left, and it means something went wrong.
-    set -g fish_color_normal          d8d8de
+    # A five-step grey ladder, and nothing between the steps. Earlier this
+    # had seven near-identical greys - #55555f beside #6a6a70, #d8d8de beside
+    # #b9b9c1 - which read as noise rather than as hierarchy.
+    #
+    #   4a4a53  ghost     what you have not typed yet
+    #   6a6a70  meta      comments, and the prompt itself
+    #   8b8b93  structure operators, options, terminators
+    #   b9b9c1  text      arguments, paths, ordinary output
+    #   e8e8ec  emphasis  the command being run
+    #
+    # Only three colours leave the ladder, and each earns it: keyword warm,
+    # quote cool, error red.
+    set -g fish_color_normal          b9b9c1
     set -g fish_color_command         e8e8ec
     set -g fish_color_keyword         a99d87
     set -g fish_color_quote           8d9689
     set -g fish_color_redirection     a99d87
-    set -g fish_color_end             928a97
+    set -g fish_color_end             8b8b93
     set -g fish_color_error           b4767d
     set -g fish_color_param           b9b9c1
-    set -g fish_color_comment         55555f
-    set -g fish_color_operator        928a97
+    set -g fish_color_comment         6a6a70
+    set -g fish_color_operator        8b8b93
     set -g fish_color_escape          a99d87
-    set -g fish_color_option          9ca9a7
+    set -g fish_color_option          8b8b93
     set -g fish_color_autosuggestion  4a4a53
     set -g fish_color_cwd             b9b9c1
-    set -g fish_color_user            859290
-    set -g fish_color_host            8d9689
+    set -g fish_color_user            6a6a70
+    set -g fish_color_host            6a6a70
     set -g fish_color_selection       --background=32323a
     set -g fish_color_search_match    --background=32323a
     set -g fish_pager_color_prefix       e8e8ec --bold
     set -g fish_pager_color_completion   b9b9c1
-    set -g fish_pager_color_description  55555f
+    set -g fish_pager_color_description  6a6a70
     set -g fish_pager_color_selected_background --background=32323a
 
     # Full path in the prompt instead of the f/b/shortened form

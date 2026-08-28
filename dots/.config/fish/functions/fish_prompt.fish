@@ -1,10 +1,11 @@
-# Fish's own "simple" preset - user@host, the path, and a plain $ - with the
-# colours moved off the blue end of the palette.
+# Fish's own "simple" preset - user@host, the path, a plain $ - in the grey
+# ladder defined in config.fish.
 #
-# Deliberately minimal: no git segment, no exit code, no framing. What time it
-# is and how long the last command took live in fish_right_prompt.
+# Two shades only: the prompt itself is meta and sits at 6a6a70, the path is
+# text and sits at b9b9c1. The $ matches user@host rather than standing on its
+# own, so the whole prompt reads as one dim frame around one bright thing.
 
-function fish_prompt --description 'Simple, in the rice palette'
+function fish_prompt --description 'Simple, in the grey ladder'
     set -l symbol ' $ '
     set -l color $fish_color_cwd
     if fish_is_root_user
@@ -13,7 +14,7 @@ function fish_prompt --description 'Simple, in the rice palette'
         and set color $fish_color_cwd_root
     end
 
-    set_color 6a6a70
+    set_color $fish_color_user
     echo -n $USER@$hostname
     set_color normal
 
@@ -21,5 +22,7 @@ function fish_prompt --description 'Simple, in the rice palette'
     echo -n (prompt_pwd)
     set_color normal
 
+    set_color $fish_color_user
     echo -n $symbol
+    set_color normal
 end
