@@ -4,30 +4,32 @@ set -g fish_greeting ''
 
 if status is-interactive
     # --- Syntax colors (iOS system palette, no default green) ---
-    set -g fish_color_normal          f5f5f7
-    set -g fish_color_command         64d2ff
-    set -g fish_color_keyword         bf5af2
-    set -g fish_color_quote           ffd60a
-    set -g fish_color_redirection     64a8ff
-    set -g fish_color_end             bf5af2
-    set -g fish_color_error           ff453a
-    set -g fish_color_param           f5f5f7
-    set -g fish_color_comment         6a6a70
-    set -g fish_color_operator        bf5af2
-    set -g fish_color_escape          ff9f0a
-    set -g fish_color_option          64a8ff
-    set -g fish_color_autosuggestion  5a5a63
-    set -g fish_color_cwd             0a84ff
-    set -g fish_color_user            64d2ff
-    set -g fish_color_host            f5f5f7
-    set -g fish_color_selection       --background=3a3a42
-    set -g fish_color_search_match    --background=3a3a42
-
-    # --- Completion pager ---
-    set -g fish_pager_color_prefix       64d2ff --bold
-    set -g fish_pager_color_completion   f5f5f7
-    set -g fish_pager_color_description  6a6a70
-    set -g fish_pager_color_selected_background --background=3a3a42
+    # Neutral palette, matching kitty's. Tokens are told apart by lightness
+    # and a faint temperature bias, not by hue: commands are the brightest
+    # thing on the line, arguments plain, everything structural dimmer.
+    # Red is the only saturated colour left, and it means something went wrong.
+    set -g fish_color_normal          d8d8de
+    set -g fish_color_command         e8e8ec
+    set -g fish_color_keyword         a99d87
+    set -g fish_color_quote           8d9689
+    set -g fish_color_redirection     a99d87
+    set -g fish_color_end             928a97
+    set -g fish_color_error           b4767d
+    set -g fish_color_param           b9b9c1
+    set -g fish_color_comment         55555f
+    set -g fish_color_operator        928a97
+    set -g fish_color_escape          a99d87
+    set -g fish_color_option          9ca9a7
+    set -g fish_color_autosuggestion  4a4a53
+    set -g fish_color_cwd             b9b9c1
+    set -g fish_color_user            859290
+    set -g fish_color_host            8d9689
+    set -g fish_color_selection       --background=32323a
+    set -g fish_color_search_match    --background=32323a
+    set -g fish_pager_color_prefix       e8e8ec --bold
+    set -g fish_pager_color_completion   b9b9c1
+    set -g fish_pager_color_description  55555f
+    set -g fish_pager_color_selected_background --background=32323a
 
     # Full path in the prompt instead of the f/b/shortened form
     set -g fish_prompt_pwd_dir_length 0
@@ -54,8 +56,12 @@ if status is-interactive
     # starship takes over when installed (it defines fish_prompt itself,
     # which wins over the autoloaded function). Until then the native
     # fish_prompt in functions/ is used, so nothing breaks either way.
-    if command -sq starship
-        set -gx STARSHIP_CONFIG "$HOME/.config/starship.toml"
-        starship init fish | source
-    end
+    # Starship is installed but not initialised: it replaces fish_prompt, and
+    # the prompt here is the hand-written one in functions/fish_prompt.fish.
+    # Uncomment to hand the prompt back to starship.
+    #
+    # if command -sq starship
+    #     set -gx STARSHIP_CONFIG "$HOME/.config/starship.toml"
+    #     starship init fish | source
+    # end
 end

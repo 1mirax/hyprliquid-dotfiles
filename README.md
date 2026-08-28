@@ -19,7 +19,7 @@ differently from every guide you will find — those are all commented in place.
 | Launcher | fuzzel — also the wallpaper picker, clipboard history and cheatsheet |
 | Notifications | mako |
 | Terminal | kitty with a cursor trail |
-| Shell | fish + starship |
+| Shell | fish, with its own `simple` prompt and a neutral palette |
 | Power | TLP + throttled, with a tested undervolt |
 
 ## Install
@@ -81,6 +81,11 @@ runtime changes need `hyprctl eval` instead.
 **waybar spawns no shell processes.** Temperature and media come from built-in
 modules rather than `exec` scripts, which took the fork rate from 83 to 12 per
 20 seconds.
+
+**The terminal palette is deliberately near-monochrome.** Tokens are told
+apart by lightness and a faint temperature bias rather than by hue; only red
+keeps real saturation, because an error has to shout. Push any of the sixteen
+colours past roughly 20% saturation and the neutrality is gone.
 
 **Applications that ship only a 512x512 icon make the launcher slow.** One of
 them cost 34 ms of a 90 ms startup. `fix-oversized-icons.py` finds them all and
