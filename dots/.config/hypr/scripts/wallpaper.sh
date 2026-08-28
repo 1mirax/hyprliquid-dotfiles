@@ -98,6 +98,10 @@ case "${1:-}" in
         img="$(current)"
         [ -n "$img" ] || die "no wallpaper found in $WALLDIR"
         apply_wallpaper "$img"
+        # Also re-sync the lock screen. On a fresh install hyprlock.conf is
+        # rendered from its template with whatever image install.sh found
+        # first, which is not necessarily the one the state file names.
+        sync_hyprlock "$img"
         ;;
     current) current ;;
     *)

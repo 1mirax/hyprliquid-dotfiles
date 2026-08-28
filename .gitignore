@@ -9,6 +9,10 @@ dots/.config/hypr/wallpaper
 # fish rewrites this itself and stores machine-specific PATH entries in it.
 dots/.config/fish/fish_variables
 
+# What install.sh backed up and linked on each run, so --unlink can reverse
+# exactly that run. Local bookkeeping, and it holds absolute paths.
+.install-state/
+
 # Created by `systemctl --user enable`; install.sh runs the enable instead.
 dots/.config/systemd/user/*.wants/
 

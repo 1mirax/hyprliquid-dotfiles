@@ -107,10 +107,18 @@ render_hyprlock() {
         say "   ok      already rendered; wallpaper.sh keeps it in sync"
         return
     fi
-    local wall
-    wall="$(find "$HOME/Pictures/wallpapers" -maxdepth 1 -type f \
-             \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' \) \
-             2>/dev/null | sort | head -1)"
+    # Prefer the wallpaper actually in use. That state file is ignored by git,
+    # so it only exists when migrating an installation rather than cloning a
+    # fresh one - in which case any image will do, and wallpaper.sh corrects
+    # the lock screen on its next restore anyway.
+    local wall state="$DOTS/.config/hypr/wallpaper"
+    if [ -r "$state" ] && [ -e "$(head -1 "$state")" ]; then
+        wall="$(head -1 "$state")"
+    else
+        wall="$(find "$HOME/Pictures/wallpapers" -maxdepth 1 -type f \
+                 \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' \) \
+                 2>/dev/null | sort | head -1)"
+    fi
     if [ -z "$wall" ]; then
         say "   note    no wallpaper in ~/Pictures/wallpapers yet - hyprlock"
         say "           will fall back to its solid background until one is set"
