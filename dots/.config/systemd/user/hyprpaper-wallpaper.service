@@ -1,0 +1,21 @@
+[Unit]
+Description=Apply wallpaper over hyprpaper IPC
+# hyprpaper 0.8.4 ignores its own config file (verified with -c and --verbose),
+# so the wallpaper is pushed in over IPC by the script, which also owns the
+# retry loop and the remembered path in ~/.config/hypr/wallpaper.
+#
+# Bound to hyprpaper.service rather than graphical-session.target on purpose:
+# hyprpaper.service is itself ordered After=graphical-session.target, so a
+# WantedBy on that target made systemd see an ordering cycle and silently drop
+# this job ("Job ... deleted to break ordering cycle").
+PartOf=hyprpaper.service
+Requires=hyprpaper.service
+After=hyprpaper.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=%h/.config/hypr/scripts/wallpaper.sh restore
+
+[Install]
+WantedBy=hyprpaper.service

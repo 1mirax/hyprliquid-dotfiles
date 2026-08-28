@@ -1,0 +1,183 @@
+@define-color foreground #f5f5f7;
+@define-color background rgba(20, 20, 24, 0.35);
+
+* {
+  border: none;
+  border-radius: 1.5px;
+  min-height: 0;
+  font-family: "Inter", "JetBrainsMono Nerd Font Propo";
+  font-size: 18px;
+}
+
+.modules-left {
+  margin-left: 12px;
+}
+
+.modules-right {
+  margin-right: 12px;
+}
+
+window#waybar {
+  background-color: @background;
+  color: @foreground;
+  transition-property: background-color;
+  transition-duration: .5s;
+}
+
+window#waybar.empty #window {
+  background: transparent;
+  border: none;
+  color: transparent;
+  padding: 0;
+  margin: 0;
+}
+
+#workspaces {
+  padding: 0px 7.5px;
+  margin: 5.2px;
+  border-radius: 16.5px;
+  background-color: alpha(@foreground, 0.1);
+  /* Edge highlight: fakes the lit rim of a glass panel. Inset only -
+     no border, the fill stays exactly as it was. */
+  box-shadow: inset 0 0 3px 3px rgba(255, 255, 255, 0.14);
+}
+
+#workspaces button {
+  color: @foreground;
+  font-size: 16.5px;
+  font-weight: 600;
+  padding: 0 9px;
+  margin: 0 2.2px;
+  min-width: 24px;
+}
+
+#workspaces button.empty {
+  color: @foreground;
+  opacity: 0.5;
+}
+
+#workspaces button.active {
+  transition: all 50ms ease-out;
+  border-radius: 27px;
+  color: #14141a;
+  background: alpha(@foreground, 0.9);
+  opacity: 1;
+  margin-top: 6px;
+  margin-bottom: 6px;
+  margin-left: 7.5px;
+  padding-right: 7.5px;
+  padding-left: 7.5px;
+}
+
+#workspaces button:hover {
+  background-color: transparent;
+}
+
+#battery,
+#pulseaudio,
+#backlight {
+  min-width: 18px;
+  margin: 0 11.2px;
+}
+
+#battery.warning {
+  color: #ffd60a;
+}
+
+#battery.critical {
+  color: #ff453a;
+}
+
+#battery.critical:not(.charging) {
+  color: #ff453a;
+  animation: blink 1.5s steps(2, start) infinite;
+}
+
+@keyframes blink {
+  to { opacity: 0.35; }
+}
+
+#tray {
+  background: alpha(@foreground, 0.0);
+  border-radius: 24px;
+  padding: 0px 7.5px;
+  margin: 5.2px 3px;
+  margin-right: 6px;
+}
+
+#clock {
+  font-size: 19.5px;
+  font-weight: 700;
+}
+
+#network {
+  margin-right: 13.5px;
+}
+
+#custom-launcher {
+  background: alpha(@foreground, 0.1);
+  /* Edge highlight: fakes the lit rim of a glass panel. Inset only -
+     no border, the fill stays exactly as it was. */
+  box-shadow: inset 0 0 3px 3px rgba(255, 255, 255, 0.14);
+  border-radius: 148.5px;
+  margin-top: 6px;
+  margin-bottom: 6px;
+  margin-left: -4.5px;
+  margin-right: 7.5px;
+  padding-right: 10.5px;
+  padding-left: 10.5px;
+}
+
+#window {
+  padding: 4.5px 9px;
+  border-radius: 21px;
+  opacity: 0.7;
+  font-size: 18px;
+}
+
+#cpu,
+#memory {
+  font-size: 18px;
+  padding: 0 7.5px;
+  min-width: 66px;
+}
+
+#temperature {
+  font-size: 18px;
+  padding: 0 7.5px;
+  min-width: 57px;
+  opacity: 0.85;
+}
+
+#group-right1 {
+  font-weight: 800;
+  background: transparent;
+  padding: 0px 7.5px;
+  margin: 5.2px 3px;
+}
+
+#group-center3,
+#group-center2 {
+  font-weight: 800;
+  background: alpha(@foreground, 0.1);
+  /* Edge highlight: fakes the lit rim of a glass panel. Inset only -
+     no border, the fill stays exactly as it was. */
+  box-shadow: inset 0 0 3px 3px rgba(255, 255, 255, 0.14);
+  border-radius: 18px;
+  padding: 0px 7.5px;
+  margin: 5.2px 3px;
+}
+
+tooltip {
+  background: rgba(28, 28, 32, 0.95);
+  border: 1.5px solid alpha(@foreground, 0.2);
+  border-radius: 18px;
+}
+
+tooltip label {
+  color: @foreground;
+}
+
+.hidden {
+  opacity: 0;
+}

@@ -1,0 +1,68 @@
+/* Glass for GTK apps - same colour and alpha as kitty: #14141a at 0.72.
+ * Only surfaces are made translucent; text and icons stay fully opaque, which
+ * a window-level opacity rule in Hyprland could not do.
+ * The blur behind comes from Hyprland (decoration:blur, ignore_opacity = true).
+ */
+
+@define-color glass rgba(20, 20, 26, 0.72);
+
+/* The glass is painted ONCE, by the toplevel window. Anything inside that
+ * repaints it stacks a second 0.72 layer and the area turns visibly darker -
+ * that is what happened to the file view under `notebook > stack`. */
+window,
+window.background,
+dialog {
+    background-color: @glass;
+}
+
+/* Header bar and toolbars sit on the same sheet of glass */
+headerbar,
+.titlebar,
+toolbar,
+.toolbar,
+.primary-toolbar,
+actionbar > revealer > box {
+    background-color: transparent;
+    background-image: none;
+    border-color: rgba(255, 255, 255, 0.10);
+}
+
+/* Sidebar: a touch lighter so it still reads as a separate pane */
+.sidebar,
+placessidebar,
+placessidebar list,
+.nemo-places-sidebar {
+    background-color: rgba(255, 255, 255, 0.04);
+}
+
+/* File area itself must not repaint an opaque sheet over the glass */
+notebook,
+notebook > stack,
+paned,
+iconview,
+treeview.view,
+scrolledwindow,
+viewport,
+.view,
+.nemo-window box {
+    background-color: transparent;
+}
+
+/* Selection needs to stay legible on a translucent ground */
+iconview:selected,
+treeview.view:selected,
+.view:selected {
+    background-color: rgba(10, 132, 255, 0.55);
+}
+
+/* Menus and popovers stay denser - they overlay content, not wallpaper */
+menu,
+.menu,
+popover {
+    background-color: rgba(24, 24, 30, 0.92);
+}
+
+/* Status bar at the bottom */
+statusbar {
+    background-color: transparent;
+}

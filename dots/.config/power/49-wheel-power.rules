@@ -1,0 +1,30 @@
+/* Let members of wheel reboot / power off / suspend without authentication.
+ *
+ * Needed when the compositor runs as a systemd user service (uwsm): every
+ * process then lives under user@1000.service instead of the session scope, so
+ * polkit may not resolve it to the active seat session. allow_active=yes then
+ * does not apply, and because the polkit agent is registered elsewhere the
+ * request is refused outright instead of prompting for a password.
+ *
+ * This also covers hypridle's `systemctl suspend` at the 15 minute timeout.
+ *
+ * Install:  sudo install -m 0644 ~/.config/power/49-wheel-power.rules \
+ *                        /etc/polkit-1/rules.d/49-wheel-power.rules
+ */
+
+polkit.addRule(function (action, subject) {
+    var power = [
+        "org.freedesktop.login1.reboot",
+        "org.freedesktop.login1.reboot-multiple-sessions",
+        "org.freedesktop.login1.power-off",
+        "org.freedesktop.login1.power-off-multiple-sessions",
+        "org.freedesktop.login1.suspend",
+        "org.freedesktop.login1.suspend-multiple-sessions",
+        "org.freedesktop.login1.hibernate",
+        "org.freedesktop.login1.hibernate-multiple-sessions"
+    ];
+
+    if (subject.isInGroup("wheel") && power.indexOf(action.id) !== -1) {
+        return polkit.Result.YES;
+    }
+});

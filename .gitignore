@@ -1,0 +1,20 @@
+# Generated from hyprlock.conf.in by install.sh, then kept in sync by
+# scripts/wallpaper.sh on every wallpaper change. Tracking it would mean an
+# absolute path in a public repo and a permanently dirty working tree.
+dots/.config/hypr/hyprlock.conf
+
+# State, not configuration: the path of the wallpaper currently set.
+dots/.config/hypr/wallpaper
+
+# fish rewrites this itself and stores machine-specific PATH entries in it.
+dots/.config/fish/fish_variables
+
+# Created by `systemctl --user enable`; install.sh runs the enable instead.
+dots/.config/systemd/user/*.wants/
+
+# Timestamped safety copies from config changes. Useful locally, noise in git.
+*.bak
+*.bak-*
+
+__pycache__/
+*.pyc

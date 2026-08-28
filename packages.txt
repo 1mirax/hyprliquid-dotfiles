@@ -1,0 +1,64 @@
+# Every package this configuration needs, verified against a working install.
+# Lines starting with # and blank lines are ignored by install.sh.
+#
+#   sudo pacman -S --needed - < packages.txt
+#
+# "throttled" comes from the AUR, so install it with an AUR helper (paru, yay)
+# rather than pacman. Everything else is in the official repositories.
+
+# --- compositor and session ---------------------------------------------
+hyprland
+hyprlock
+hypridle
+hyprpaper
+hyprcursor
+uwsm                        # session manager: runs the daemons as systemd units
+xdg-desktop-portal-hyprland
+
+# --- the shell around it ------------------------------------------------
+waybar                      # top bar
+mako                        # notifications
+fuzzel                      # launcher, and the picker behind wallpapers,
+                            # clipboard history and the keybind cheatsheet
+kitty                       # terminal
+nemo                        # file manager
+
+# --- clipboard, capture, media ------------------------------------------
+cliphist
+wl-clipboard                # wl-copy / wl-paste, cliphist depends on it
+grim
+slurp
+hyprpicker
+playerctl                   # feeds waybar's mpris module
+
+# --- hardware controls --------------------------------------------------
+brightnessctl
+pamixer
+pavucontrol
+polkit-gnome                # the authentication agent
+
+# --- shell -------------------------------------------------------------
+fish
+starship
+
+# --- power management (see .config/power/install.sh) --------------------
+tlp
+# throttled                 # AUR: undervolt and HWP control for this ThinkPad
+
+# --- libraries the scripts and bar link against -------------------------
+python-gobject              # fix-oversized-icons.py uses GdkPixbuf
+gtk-layer-shell             # waybar needs it
+
+# --- appearance ---------------------------------------------------------
+adwaita-icon-theme
+inter-font                  # the UI font everywhere
+ttf-jetbrains-mono-nerd     # terminal, and the glyphs in the bar
+noto-fonts
+noto-fonts-emoji
+
+# --- toolkit support for Wayland ---------------------------------------
+qt5-wayland
+qt6-wayland
+
+# --- optional -----------------------------------------------------------
+btop                        # what the CPU and RAM modules open on click

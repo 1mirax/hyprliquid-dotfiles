@@ -1,0 +1,161 @@
+{
+  "reload_style_on_change": true,
+  "layer": "top",
+  "position": "top",
+  "spacing": 0,
+  "height": 3,
+  "modules-left": ["custom/launcher", "hyprland/window"],
+  "modules-center": ["group/center3", "hyprland/workspaces", "group/center2"],
+  "modules-right": ["group/right1"],
+
+  "group/center2": {
+    "orientation": "inherit",
+    "modules": ["clock"]
+  },
+
+  "group/center3": {
+    "orientation": "inherit",
+    "modules": ["cpu", "memory", "temperature", "custom/separator#blank", "mpris"]
+  },
+
+  "group/right1": {
+    "orientation": "inherit",
+    "modules": [
+      "tray",
+      "custom/separator#blank",
+      "pulseaudio",
+      "backlight",
+      "network",
+      "battery"
+    ]
+  },
+
+  "custom/launcher": {
+    "format": "<span size='17250'>󰣇</span>",
+    "on-click": "fuzzel",
+    "tooltip": false
+  },
+
+  "hyprland/window": {
+    "format": "{title}",
+    "max-length": 45,
+    "separate-outputs": true
+  },
+
+  "hyprland/workspaces": {
+    "on-click": "activate",
+    "format": "{id}",
+    "persistent-workspaces": {
+      "1": [], "2": [], "3": [], "4": [], "5": []
+    }
+  },
+
+  "cpu": {
+    "interval": 2,
+    "format": "󰻠 {usage}%",
+    "tooltip-format": "CPU load {usage}%",
+    "on-click": "kitty -e btop"
+  },
+
+  "memory": {
+    "interval": 2,
+    "format": "󰍛 {percentage}%",
+    "tooltip-format": "RAM {used:0.1f} / {total:0.1f} GiB",
+    "on-click": "kitty -e btop"
+  },
+
+  // Built-in module: reads hwmon directly, no shell, no spawned processes.
+  // hwmon-path-abs is the stable device directory - the hwmonN number under it
+  // is reassigned on every boot, so it must not be hardcoded.
+  "temperature": {
+    "hwmon-path-abs": "/sys/devices/platform/coretemp.0/hwmon",
+    "input-filename": "temp1_input",
+    "format": "\udb84\udd0f {temperatureC}\u00b0",
+    "critical-threshold": 90,
+    "format-critical": "\udb84\udd0f {temperatureC}\u00b0",
+    "interval": 5,
+    "tooltip": false
+  },
+
+  "clock": {
+    "format": " {:%H:%M • %a, %d/%m}   ",
+    "format-alt": "{:%A, %d %B %Y}   ",
+    "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
+  },
+
+  // Built-in MPRIS module: updates from D-Bus events instead of polling
+  // playerctl through a shell twice a second.
+  // Do NOT add "interval": 0 here. waybar reads that as a zero-length pause
+  // rather than "no polling", the module thread spins and the bar never
+  // renders - it creates its layer and logs nothing, so it looks healthy.
+  // Event-driven modules simply omit the field.
+  "mpris": {
+    "format": "\uf001  {title}",
+    "format-paused": "\uf04c  {title}",
+    "format-stopped": "     No media     ",
+    "dynamic-len": 25,
+    "dynamic-order": ["title"],
+    "on-click": "play-pause",
+    "tooltip-format": "{player}: {title} - {artist}"
+  },
+
+  "custom/separator#blank": {
+    "format": " ",
+    "interval": "once",
+    "tooltip": false
+  },
+
+  "tray": {
+    "icon-size": 24,
+    "spacing": 12
+  },
+
+  "pulseaudio": {
+    "format": "<span size='17250'>{icon}</span>",
+    "on-click": "pamixer -t",
+    "on-click-right": "pavucontrol",
+    "tooltip-format": "Playing at {volume}%",
+    "scroll-step": 5,
+    "format-muted": " ",
+    "format-icons": {
+      "default": [" ", " ", " "]
+    }
+  },
+
+  "backlight": {
+    "format": "<span size='17250'>{icon}</span>",
+    "format-icons": ["󰃞", "󰃟", "󰃠"],
+    "on-scroll-up": "brightnessctl set 5%+",
+    "on-scroll-down": "brightnessctl set 5%-",
+    "tooltip": false
+  },
+
+  "network": {
+    "format-icons": ["󰤯", "󰤟", "󰤢", "󰤥", "󰤨"],
+    "format": "{icon}",
+    "format-wifi": "{icon}",
+    "format-ethernet": "<span size='17250'>󰌘</span>",
+    "format-disconnected": "<span size='17250'>󰤮</span>",
+    "tooltip-format-wifi": "{essid} ({frequency} GHz)\n⇣{bandwidthDownBytes}  ⇡{bandwidthUpBytes}",
+    "tooltip-format-disconnected": "Disconnected",
+    "interval": 3,
+    "on-click": "kitty -e nmtui"
+  },
+
+  "battery": {
+    "format": "{capacity}% {icon}",
+    "format-charging": "{capacity}% {icon}",
+    "format-icons": {
+      "charging": ["󰢜", "󰂆", "󰂇", "󰂈", "󰢝", "󰂉", "󰢞", "󰂊", "󰂋", "󰂅"],
+      "default": ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"]
+    },
+    "format-full": "󰂅",
+    "tooltip-format-discharging": "{power:>1.0f}W↓ {capacity}%",
+    "tooltip-format-charging": "{power:>1.0f}W↑ {capacity}%",
+    "interval": 5,
+    "states": {
+      "warning": 20,
+      "critical": 10
+    }
+  }
+}
