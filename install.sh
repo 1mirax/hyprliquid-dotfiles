@@ -81,7 +81,6 @@ FILE_LINKS=(
     .config/starship.toml
     .config/fish/config.fish
     .config/fish/functions/fish_prompt.fish
-    .config/fish/functions/fish_right_prompt.fish
     .config/gtk-3.0/settings.ini
     .config/gtk-3.0/gtk.css
     .config/gtk-4.0/settings.ini
