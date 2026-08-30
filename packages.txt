@@ -3,7 +3,9 @@
 #
 #   sudo pacman -S --needed - < packages.txt
 #
-# Every package here is in the official repositories - nothing needs the AUR.
+# Everything above the AUR section is in the official repositories. The two
+# AUR packages at the bottom are the Bluetooth and audio menus; the setup
+# works without them, see the note there.
 
 # --- compositor and session ---------------------------------------------
 hyprland
@@ -30,10 +32,23 @@ slurp
 hyprpicker
 playerctl                   # feeds waybar's mpris module
 
+# --- sound --------------------------------------------------------------
+# All four are required. pipewire alone is only the engine: without
+# wireplumber nothing claims the hardware and the graph holds two dummy nodes,
+# and without pipewire-pulse there is no socket for Firefox and everything
+# else that speaks only the PulseAudio protocol.
+pipewire
+wireplumber                 # session manager - decides what connects to what
+pipewire-pulse              # PulseAudio protocol, for Firefox, Electron, Wine
+pipewire-alsa               # routes ALSA-only applications into the graph
+alsa-utils                  # aplay / amixer, for diagnosing the bottom layer
+
+# --- bluetooth ----------------------------------------------------------
+bluez
+bluez-utils                 # bluetoothctl
+
 # --- hardware controls --------------------------------------------------
 brightnessctl
-pamixer
-pavucontrol
 polkit-gnome                # the authentication agent
 
 # --- shell -------------------------------------------------------------
@@ -61,3 +76,14 @@ qt6-wayland
 
 # --- optional -----------------------------------------------------------
 btop                        # what the CPU and RAM modules open on click
+
+# --- AUR ----------------------------------------------------------------
+# Both are single binaries that drive fuzzel; neither is required for the
+# session to come up. Without bzmenu the Bluetooth key falls back to
+# scripts/bluetooth.sh, which needs only bluez-utils. Without pwmenu there is
+# no device picker, but the volume keys keep working through wpctl.
+#
+#   yay -S --needed bzmenu-bin pwmenu-bin
+#
+# bzmenu-bin                Bluetooth menu, talks to BlueZ over D-Bus
+# pwmenu-bin                audio menu, talks to PipeWire natively

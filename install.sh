@@ -91,10 +91,17 @@ FILE_LINKS=(
     .gtkrc-2.0
 )
 
-# systemd units that bring the session up. The first five ship with their own
-# packages; the last three are ours. hyprpaper-wallpaper is WantedBy hyprpaper
-# rather than the session target, to avoid an ordering cycle.
+# systemd units that bring the session up. Most ship with their own packages;
+# cliphist-images, polkit-gnome-agent and hyprpaper-wallpaper are ours.
+# hyprpaper-wallpaper is WantedBy hyprpaper rather than the session target, to
+# avoid an ordering cycle.
+#
+# wireplumber and pipewire-pulse are here because installing them is not
+# enough: pipewire.socket starts on its own, but nothing pulls in the session
+# manager, and without it the audio graph comes up holding two dummy nodes and
+# no hardware. That is exactly how this machine ran with no sound at all.
 UNITS=(waybar mako hypridle hyprpaper cliphist
+       wireplumber pipewire-pulse
        cliphist-images polkit-gnome-agent hyprpaper-wallpaper)
 
 
@@ -183,6 +190,11 @@ Done. Two things this script deliberately leaves to you:
 
   Packages   Read packages.txt first, then:
                sudo pacman -S --needed - < packages.txt
+             The two AUR menus at the bottom of that file are optional:
+               yay -S --needed bzmenu-bin pwmenu-bin
+
+  Bluetooth  A system unit, so this script does not touch it:
+               sudo systemctl enable --now bluetooth
 
   Power      The undervolt values are specific to one CPU sample, and too
              large a value panics the kernel. Read .config/power/throttled.conf
