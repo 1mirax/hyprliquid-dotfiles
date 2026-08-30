@@ -100,10 +100,22 @@ hl.bind(mod .. " + SHIFT + E", hl.dsp.exit(), { description = "Session: Exit Hyp
 hl.bind("SUPER + SUPER_L", hl.dsp.exec_cmd("pkill fuzzel || fuzzel"), { release = true })
 hl.bind(mod .. " + CTRL + SHIFT + R", hl.dsp.exec_cmd("hyprctl reload"), { description = "Session: Reload config" })
 
-hl.bind("XF86AudioMute", hl.dsp.exec_cmd("pamixer -t"), { locked = true, description = "Media: Mute" })
-hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("pamixer -i 5"), { locked = true, repeating = true, description = "Media: Volume up" })
-hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("pamixer -d 5"), { locked = true, repeating = true, description = "Media: Volume down" })
-hl.bind("XF86AudioMicMute", hl.dsp.exec_cmd("pamixer --default-source -t"), { locked = true, description = "Media: Mute microphone" })
+-- wpctl ships with wireplumber and talks to PipeWire directly, so no pamixer
+-- and no detour through the PulseAudio compatibility socket.
+--
+-- @DEFAULT_AUDIO_SINK@ is resolved at press time, so these follow Bluetooth
+-- headphones the moment they become the default output.
+--
+-- -l 1.0 is not optional: unlike pamixer, wpctl has no ceiling of its own, and
+-- without the limit a held key walks past 100% into software gain - which
+-- clips, and is dangerous in headphones. Lowering needs no limit; zero is one.
+hl.bind("XF86AudioMute", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"), { locked = true, description = "Media: Mute" })
+hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+"), { locked = true, repeating = true, description = "Media: Volume up" })
+hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"), { locked = true, repeating = true, description = "Media: Volume down" })
+hl.bind("XF86AudioMicMute", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"), { locked = true, description = "Media: Mute microphone" })
+
+hl.bind(mod .. " + A", hl.dsp.exec_cmd("~/.config/hypr/scripts/audio-menu.sh"),
+  { description = "Media: Audio devices" })
 hl.bind("XF86AudioPlay", hl.dsp.exec_cmd("playerctl play-pause"), { locked = true, description = "Media: Play / pause" })
 hl.bind("XF86AudioNext", hl.dsp.exec_cmd("playerctl next"), { locked = true, description = "Media: Next track" })
 hl.bind("XF86AudioPrev", hl.dsp.exec_cmd("playerctl previous"), { locked = true, description = "Media: Previous track" })
