@@ -1,183 +1,205 @@
-@define-color foreground #f5f5f7;
+/* Flat bar, after illogical-impulse: one glass surface for the whole strip,
+ * groups separated by space rather than by boxes. The previous version wrapped
+ * every group in its own filled, rounded, inset-highlighted island, which at
+ * this height read as a row of tight bright rings.
+ *
+ * Only the workspaces keep a background, because the active pill needs
+ * something to sit inside. */
+
+@define-color foreground #e8e8ec;
+@define-color muted      #b9b9c1;
+@define-color faint      #8b8b93;
 @define-color background rgba(20, 20, 24, 0.35);
 
 * {
   border: none;
-  border-radius: 1.5px;
+  border-radius: 0;
   min-height: 0;
   font-family: "Inter", "JetBrainsMono Nerd Font Propo";
-  font-size: 18px;
-}
-
-.modules-left {
-  margin-left: 12px;
-}
-
-.modules-right {
-  margin-right: 12px;
+  font-size: 17px;
 }
 
 window#waybar {
   background-color: @background;
   color: @foreground;
-  transition-property: background-color;
-  transition-duration: .5s;
 }
 
+/* The title is decoration when nothing is focused - hide it entirely rather
+ * than leaving an empty slot that shifts the layout. */
 window#waybar.empty #window {
   background: transparent;
-  border: none;
   color: transparent;
   padding: 0;
   margin: 0;
 }
 
+.modules-left  { margin-left: 10px; }
+.modules-right { margin-right: 14px; }
+
+/* --- left ------------------------------------------------------------- */
+
+#custom-launcher {
+  color: @foreground;
+  padding: 0 12px 0 8px;
+  margin: 0;
+}
+
+#custom-launcher:hover { color: #ffffff; }
+
+/* CPU, memory and temperature sit immediately left of the workspaces, packed
+ * tight: they are one reading of how the machine is doing, not three separate
+ * indicators. The fixed widths stop the centre from shifting sideways every
+ * time a percentage gains a digit - without them the workspace pill would
+ * wander as the load changes. */
+#cpu, #memory, #temperature {
+  color: @muted;
+  font-size: 16px;
+  padding: 0 3px;
+  margin: 0;
+  /* Tabular figures: without them Inter's digits have different widths, so
+   * "11%" and "100%" render at different sizes and the whole centre group
+   * twitches sideways as the load changes. */
+  font-feature-settings: "tnum";
+  transition: color 120ms ease-out;
+}
+
+#temperature { padding-right: 12px; }
+
+#cpu:hover, #memory:hover, #temperature:hover { color: @foreground; }
+
+/* Fixed boxes, wide enough for the worst case ("󰻠 100%" measures 60 px at
+ * 16 px), so the readings never resize and the pill never drifts. */
+#cpu, #memory, #temperature { min-width: 60px; }
+
+/* Same colour as the readings: they are one band of information either side
+ * of the pill, and two different greys there read as a mistake. Weight, not
+ * colour, marks the clock as the thing worth reading. */
+#clock {
+  color: @muted;
+  font-size: 17px;
+  font-weight: 600;
+  padding: 0 0 0 10px;
+  margin: 0;
+  font-feature-settings: "tnum";
+  transition: color 120ms ease-out;
+}
+
+#clock:hover { color: @foreground; }
+
+/* Balancing the centre group, measured rather than guessed:
+ *
+ *   left   60+6  +  60+6  +  60+15                     = 207 px
+ *   right  10 (clock pad) + 124 (clock text) + 73       = 207 px
+ *
+ * The spacer carries the remainder so the clock can sit right next to the
+ * pill. An earlier version put all 207 px on the clock's min-width instead,
+ * which centred its text inside the box and left an ugly hole between the
+ * pill and the time. If the pill drifts, these two sums stopped matching. */
+#custom-balance { min-width: 73px; }
+
+#temperature.critical { color: #c26873; }
+
+/* Separated from the logo by a rule, not by a box: the complaint about the old
+ * bar was that the window title just sat there with nothing between it and the
+ * launcher. */
+#window {
+  color: @muted;
+  font-size: 16px;
+  padding: 0 14px;
+  margin: 8px 0;
+  border-left: 1px solid alpha(@foreground, 0.14);
+}
+
+/* --- centre ------------------------------------------------------------ */
+
 #workspaces {
-  padding: 0px 7.5px;
-  margin: 5.2px;
-  border-radius: 16.5px;
-  background-color: alpha(@foreground, 0.1);
-  /* Edge highlight: fakes the lit rim of a glass panel. Inset only -
-     no border, the fill stays exactly as it was. */
-  box-shadow: inset 0 0 3px 3px rgba(255, 255, 255, 0.14);
+  background-color: alpha(@foreground, 0.07);
+  border-radius: 999px;
+  padding: 0 4px;
+  margin: 5px 0;
 }
 
 #workspaces button {
-  color: @foreground;
-  font-size: 16.5px;
+  color: @faint;
+  font-size: 15px;
   font-weight: 600;
-  padding: 0 9px;
-  margin: 0 2.2px;
-  min-width: 24px;
+  min-width: 26px;
+  padding: 0 4px;
+  margin: 4px 2px;
+  border-radius: 999px;
+  transition: background-color 120ms ease-out, color 120ms ease-out;
 }
 
-#workspaces button.empty {
-  color: @foreground;
-  opacity: 0.5;
-}
+/* Occupied but not focused: brighter than an empty one, dimmer than active. */
+#workspaces button:not(.empty) { color: @muted; }
 
 #workspaces button.active {
-  transition: all 50ms ease-out;
-  border-radius: 27px;
   color: #14141a;
-  background: alpha(@foreground, 0.9);
-  opacity: 1;
-  margin-top: 6px;
-  margin-bottom: 6px;
-  margin-left: 7.5px;
-  padding-right: 7.5px;
-  padding-left: 7.5px;
+  background-color: alpha(@foreground, 0.92);
 }
 
 #workspaces button:hover {
-  background-color: transparent;
+  color: @foreground;
+  background-color: alpha(@foreground, 0.12);
 }
 
-#battery,
+#workspaces button.urgent {
+  color: #14141a;
+  background-color: #c26873;
+}
+
+/* --- right ------------------------------------------------------------- */
+
+/* One spacing rule for every indicator, so the row reads as evenly spaced
+ * icons instead of a set of differently-padded widgets. */
+#mpris,
+#idle_inhibitor,
+#bluetooth,
+#network,
 #pulseaudio,
-#backlight {
-  min-width: 18px;
-  margin: 0 11.2px;
+#backlight,
+#battery {
+  color: @muted;
+  padding: 0 9px;
+  margin: 0;
+  transition: color 120ms ease-out;
 }
 
-#battery.warning {
-  color: #ffd60a;
-}
+#mpris:hover,
+#idle_inhibitor:hover,
+#bluetooth:hover,
+#network:hover,
+#pulseaudio:hover,
+#backlight:hover,
+#battery:hover { color: @foreground; }
 
-#battery.critical {
-  color: #ff453a;
-}
+#mpris          { color: @faint; }
+#mpris.playing  { color: @muted; }
+
+/* States. Only these carry colour; everything else stays on the grey ladder
+ * so that colour still means something. */
+#battery.warning      { color: #c3a56d; }
+#battery.critical     { color: #c26873; }
 
 #battery.critical:not(.charging) {
-  color: #ff453a;
+  color: #c26873;
   animation: blink 1.5s steps(2, start) infinite;
 }
 
-@keyframes blink {
-  to { opacity: 0.35; }
-}
+@keyframes blink { to { opacity: 0.35; } }
 
-#tray {
-  background: alpha(@foreground, 0.0);
-  border-radius: 24px;
-  padding: 0px 7.5px;
-  margin: 5.2px 3px;
-  margin-right: 6px;
-}
+/* Awake-lock on: the one indicator that should be impossible to miss, since
+ * forgetting it flat means the laptop never sleeps. */
+#idle_inhibitor.activated { color: #c3a56d; }
 
-#clock {
-  font-size: 19.5px;
-  font-weight: 700;
-}
-
-#network {
-  margin-right: 13.5px;
-}
-
-#custom-launcher {
-  background: alpha(@foreground, 0.1);
-  /* Edge highlight: fakes the lit rim of a glass panel. Inset only -
-     no border, the fill stays exactly as it was. */
-  box-shadow: inset 0 0 3px 3px rgba(255, 255, 255, 0.14);
-  border-radius: 148.5px;
-  margin-top: 6px;
-  margin-bottom: 6px;
-  margin-left: -4.5px;
-  margin-right: 7.5px;
-  padding-right: 10.5px;
-  padding-left: 10.5px;
-}
-
-#window {
-  padding: 4.5px 9px;
-  border-radius: 21px;
-  opacity: 0.7;
-  font-size: 18px;
-}
-
-#cpu,
-#memory {
-  font-size: 18px;
-  padding: 0 7.5px;
-  min-width: 66px;
-}
-
-#temperature {
-  font-size: 18px;
-  padding: 0 7.5px;
-  min-width: 57px;
-  opacity: 0.85;
-}
-
-#group-right1 {
-  font-weight: 800;
-  background: transparent;
-  padding: 0px 7.5px;
-  margin: 5.2px 3px;
-}
-
-#group-center3,
-#group-center2 {
-  font-weight: 800;
-  background: alpha(@foreground, 0.1);
-  /* Edge highlight: fakes the lit rim of a glass panel. Inset only -
-     no border, the fill stays exactly as it was. */
-  box-shadow: inset 0 0 3px 3px rgba(255, 255, 255, 0.14);
-  border-radius: 18px;
-  padding: 0px 7.5px;
-  margin: 5.2px 3px;
-}
+#tray { padding: 0 6px 0 10px; }
+#tray > .passive { -gtk-icon-effect: dim; }
+#tray > .needs-attention { -gtk-icon-effect: highlight; }
 
 tooltip {
-  background: rgba(28, 28, 32, 0.95);
-  border: 1.5px solid alpha(@foreground, 0.2);
-  border-radius: 18px;
+  background: rgba(24, 24, 28, 0.96);
+  border: 1px solid alpha(@foreground, 0.14);
+  border-radius: 14px;
 }
 
-tooltip label {
-  color: @foreground;
-}
-
-.hidden {
-  opacity: 0;
-}
+tooltip label { color: @muted; padding: 2px; }

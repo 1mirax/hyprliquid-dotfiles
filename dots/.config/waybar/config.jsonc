@@ -4,50 +4,65 @@
   "position": "top",
   "spacing": 0,
   "height": 3,
+
+  // One flat strip, the way illogical-impulse does it: no per-group islands,
+  // groups separated by air rather than by boxes. Only the workspaces keep a
+  // background, because the active pill needs something to sit in.
   "modules-left": ["custom/launcher", "hyprland/window"],
-  "modules-center": ["group/center3", "hyprland/workspaces", "group/center2"],
-  "modules-right": ["group/right1"],
+  "modules-center": ["cpu", "memory", "temperature", "hyprland/workspaces", "clock", "custom/balance"],
+  "modules-right": [
+    "mpris",
+    "idle_inhibitor",
+    "bluetooth", "network", "pulseaudio", "backlight", "battery",
+    "tray"
+  ],
 
-  "group/center2": {
-    "orientation": "inherit",
-    "modules": ["clock"]
-  },
-
-  "group/center3": {
-    "orientation": "inherit",
-    "modules": ["cpu", "memory", "temperature", "custom/separator#blank", "mpris"]
-  },
-
-  "group/right1": {
-    "orientation": "inherit",
-    "modules": [
-      "tray",
-      "custom/separator#blank",
-      "pulseaudio",
-      "backlight",
-      "network",
-      "battery"
-    ]
-  },
+  // Invisible counterweight. waybar centres the whole centre group, so the
+  // readings left of the pill have to be matched on the right. The clock
+  // covers most of it; this makes up the remainder. See the arithmetic in
+  // style.css - change either side and the pill drifts.
+  "custom/balance": { "format": " ", "tooltip": false },
 
   "custom/launcher": {
     "format": "<span size='17250'>󰣇</span>",
     "on-click": "fuzzel",
-    "tooltip": false
+    "tooltip": true,
+    "tooltip-format": "Applications"
   },
 
   "hyprland/window": {
     "format": "{title}",
-    "max-length": 45,
-    "separate-outputs": true
+    "max-length": 42,
+    "separate-outputs": true,
+    "tooltip": false
   },
 
   "hyprland/workspaces": {
     "on-click": "activate",
     "format": "{id}",
-    "persistent-workspaces": {
-      "1": [], "2": [], "3": [], "4": [], "5": []
-    }
+    "persistent-workspaces": { "1": [], "2": [], "3": [], "4": [], "5": [] }
+  },
+
+  // The button the laptop needed: while it is on, hypridle neither dims,
+  // locks nor suspends. waybar handles the inhibit itself, no script.
+  "idle_inhibitor": {
+    "format": "{icon}",
+    "format-icons": {
+      "activated": "<span size='17250'>󰅶</span>",
+      "deactivated": "<span size='17250'>󰤄</span>"
+    },
+    "tooltip-format-activated": "Staying awake - click to allow sleep",
+    "tooltip-format-deactivated": "Sleeps normally - click to stay awake"
+  },
+
+  "bluetooth": {
+    "format": "<span size='17250'>󰂯</span>",
+    "format-disabled": "",
+    "format-connected": "<span size='17250'>󰂱</span>",
+    "tooltip-format": "Bluetooth on\n{num_connections} connected",
+    "tooltip-format-connected": "{device_alias}",
+    "tooltip-format-enumerate-connected": "{device_alias}",
+    "on-click": "~/.config/hypr/scripts/bluetooth-menu.sh"
   },
 
   "cpu": {
@@ -64,22 +79,27 @@
     "on-click": "kitty -e btop"
   },
 
-  // Built-in module: reads hwmon directly, no shell, no spawned processes.
   // hwmon-path-abs is the stable device directory - the hwmonN number under it
   // is reassigned on every boot, so it must not be hardcoded.
+  // The glyph is U+F050F, nf-md-thermometer. It used to be U+F110F, which
+  // exists in the font too and draws a salt shaker.
   "temperature": {
     "hwmon-path-abs": "/sys/devices/platform/coretemp.0/hwmon",
     "input-filename": "temp1_input",
-    "format": "\udb84\udd0f {temperatureC}\u00b0",
+    "format": "󰔏 {temperatureC}°",
     "critical-threshold": 90,
-    "format-critical": "\udb84\udd0f {temperatureC}\u00b0",
     "interval": 5,
-    "tooltip": false
+    "tooltip-format": "Package {temperatureC}°C\nClick for btop",
+    "on-click": "kitty -e btop"
   },
 
+  // Fixed-length on purpose: %d always pads to two digits and %b is always
+  // three letters, so the clock never changes width and never nudges the
+  // workspace pill. A weekday or full month name would, since "Sat" and
+  // "Wednesday" are not the same width.
   "clock": {
-    "format": " {:%H:%M • %a, %d/%m}   ",
-    "format-alt": "{:%A, %d %B %Y}   ",
+    "format": "{:%H:%M  ·  %d %b}",
+    "format-alt": "{:%A, %d %B}",
     "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
   },
 
@@ -88,58 +108,50 @@
   // Do NOT add "interval": 0 here. waybar reads that as a zero-length pause
   // rather than "no polling", the module thread spins and the bar never
   // renders - it creates its layer and logs nothing, so it looks healthy.
-  // Event-driven modules simply omit the field.
   "mpris": {
-    "format": "\uf001  {title}",
-    "format-paused": "\uf04c  {title}",
-    "format-stopped": "     No media     ",
-    "dynamic-len": 25,
+    "format": "  {title}",
+    "format-paused": "  {title}",
+    "format-stopped": "",
+    "dynamic-len": 22,
     "dynamic-order": ["title"],
     "on-click": "play-pause",
     "tooltip-format": "{player}: {title} - {artist}"
   },
 
-  "custom/separator#blank": {
-    "format": " ",
-    "interval": "once",
-    "tooltip": false
-  },
-
-  "tray": {
-    "icon-size": 24,
-    "spacing": 12
-  },
+  "tray": { "icon-size": 20, "spacing": 10 },
 
   "pulseaudio": {
     "format": "<span size='17250'>{icon}</span>",
-    "on-click": "pamixer -t",
-    "on-click-right": "pavucontrol",
-    "tooltip-format": "Playing at {volume}%",
-    "scroll-step": 5,
-    "format-muted": " ",
-    "format-icons": {
-      "default": [" ", " ", " "]
-    }
+    "format-muted": "<span size='17250'>󰖁</span>",
+    "format-icons": { "default": ["󰕿", "󰖀", "󰕾"] },
+    "on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
+    "on-click-right": "~/.config/hypr/scripts/audio-menu.sh",
+    "tooltip-format": "Volume {volume}% - right-click to pick a device",
+    "scroll-step": 5
   },
 
+  // Scrolling changes it, the tooltip says by how much, and a click jumps to
+  // full. Before this it displayed an icon and did nothing else.
   "backlight": {
     "format": "<span size='17250'>{icon}</span>",
     "format-icons": ["󰃞", "󰃟", "󰃠"],
     "on-scroll-up": "brightnessctl set 5%+",
     "on-scroll-down": "brightnessctl set 5%-",
-    "tooltip": false
+    "on-click": "brightnessctl set 100%",
+    "tooltip-format": "Brightness {percent}% - scroll to change, click for full"
   },
 
   "network": {
-    "format-icons": ["󰤯", "󰤟", "󰤢", "󰤥", "󰤨"],
     "format": "{icon}",
-    "format-wifi": "{icon}",
+    "format-icons": ["󰤯", "󰤟", "󰤢", "󰤥", "󰤨"],
+    "format-wifi": "<span size='17250'>{icon}</span>",
     "format-ethernet": "<span size='17250'>󰌘</span>",
     "format-disconnected": "<span size='17250'>󰤮</span>",
-    "tooltip-format-wifi": "{essid} ({frequency} GHz)\n⇣{bandwidthDownBytes}  ⇡{bandwidthUpBytes}",
-    "tooltip-format-disconnected": "Disconnected",
+    "tooltip-format-wifi": "{essid}  {signalStrength}%\n⇣{bandwidthDownBytes}  ⇡{bandwidthUpBytes}",
+    "tooltip-format-ethernet": "Wired  {ipaddr}",
+    "tooltip-format-disconnected": "Offline - click to pick a network",
     "interval": 3,
-    "on-click": "kitty -e nmtui"
+    "on-click": "~/.config/hypr/scripts/network.sh"
   },
 
   "battery": {
@@ -149,13 +161,10 @@
       "charging": ["󰢜", "󰂆", "󰂇", "󰂈", "󰢝", "󰂉", "󰢞", "󰂊", "󰂋", "󰂅"],
       "default": ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"]
     },
-    "format-full": "󰂅",
-    "tooltip-format-discharging": "{power:>1.0f}W↓ {capacity}%",
-    "tooltip-format-charging": "{power:>1.0f}W↑ {capacity}%",
+    "format-full": "{capacity}% 󰂅",
+    "tooltip-format-discharging": "{power:>1.0f} W draw - {time} left",
+    "tooltip-format-charging": "{power:>1.0f} W in - {time} to full",
     "interval": 5,
-    "states": {
-      "warning": 20,
-      "critical": 10
-    }
+    "states": { "warning": 20, "critical": 10 }
   }
 }
