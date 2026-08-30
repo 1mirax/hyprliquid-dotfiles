@@ -80,6 +80,21 @@ hl.bind(mod .. " + CTRL + W", hl.dsp.exec_cmd("~/.config/hypr/scripts/wallpaper.
 hl.bind(mod .. " + Slash", hl.dsp.exec_cmd("~/.config/hypr/scripts/cheatsheet.py"),
   { description = "Session: Keybind cheatsheet" })
 
+-- Bluetooth: bzmenu, wrapped in a script so waybar's on-click shares it.
+hl.bind(mod .. " + B", hl.dsp.exec_cmd("~/.config/hypr/scripts/bluetooth-menu.sh"),
+  { description = "Network: Bluetooth" })
+
+-- Kept aside as a fallback: pure bluetoothctl, works with nothing installed
+-- beyond bluez-utils and fuzzel.
+hl.bind(mod .. " + ALT + B", hl.dsp.exec_cmd("~/.config/hypr/scripts/bluetooth.sh"),
+  { description = "Network: Bluetooth (fallback)" })
+
+-- Wi-Fi: still deciding between networkmanager_dmenu and our own script.
+hl.bind(mod .. " + I", hl.dsp.exec_cmd("networkmanager_dmenu"),
+  { description = "Network: Wi-Fi" })
+hl.bind(mod .. " + SHIFT + I", hl.dsp.exec_cmd("~/.config/hypr/scripts/network.sh"),
+  { description = "Network: Wi-Fi (our script)" })
+
 hl.bind(mod .. " + L", hl.dsp.exec_cmd("loginctl lock-session"), { description = "Session: Lock" })
 hl.bind(mod .. " + SHIFT + E", hl.dsp.exit(), { description = "Session: Exit Hyprland" })
 hl.bind("SUPER + SUPER_L", hl.dsp.exec_cmd("pkill fuzzel || fuzzel"), { release = true })
