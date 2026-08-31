@@ -14,6 +14,18 @@ hypridle
 hyprpaper
 hyprcursor
 uwsm                        # session manager: runs the daemons as systemd units
+# Only the Hyprland backend, on purpose. It implements the compositor-specific
+# interfaces - screen capture, global shortcuts - and nothing else. The usual
+# companion, xdg-desktop-portal-gtk, would add AppChooser, Print, Notification
+# and friends, all of which exist for sandboxed apps that are not installed
+# here, plus Settings.
+#
+# Settings is the one real loss: it is how an application asks the session
+# whether to prefer a dark theme over D-Bus. GTK apps do not need it, they read
+# gtk-application-prefer-dark-theme from .config/gtk-3.0/settings.ini directly.
+# Firefox does use it, so with no backend for it the browser must be told to
+# use a dark theme in its own settings. That is the trade: one manual setting
+# against a 6.5 MB resident process.
 xdg-desktop-portal-hyprland
 
 # --- the shell around it ------------------------------------------------
