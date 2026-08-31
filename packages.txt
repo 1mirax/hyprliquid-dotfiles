@@ -95,7 +95,11 @@ btop                        # what the CPU and RAM modules open on click
 # scripts/bluetooth.sh, which needs only bluez-utils. Without pwmenu there is
 # no device picker, but the volume keys keep working through wpctl.
 #
-#   yay -S --needed bzmenu-bin pwmenu-bin
+#   yay -S --needed bzmenu-bin pwmenu-bin networkmanager-dmenu-git
 #
 # bzmenu-bin                Bluetooth menu, talks to BlueZ over D-Bus
 # pwmenu-bin                audio menu, talks to PipeWire natively
+# networkmanager-dmenu-git  Wi-Fi menu; reaches saved connections, VPN and
+#                           WireGuard, hotspots and the password QR code.
+#                           Without it Super+ALT+I still picks a network
+#                           through scripts/network.sh and plain nmcli.

@@ -166,7 +166,7 @@
     "tooltip-format-ethernet": "Wired  {ipaddr}",
     "tooltip-format-disconnected": "Offline - click to pick a network",
     "interval": 3,
-    "on-click": "~/.config/hypr/scripts/network.sh"
+    "on-click": "networkmanager_dmenu"
   },
 
   "battery": {

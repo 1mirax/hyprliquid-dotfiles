@@ -73,6 +73,7 @@ DIR_LINKS=(
     .config/fuzzel
     .config/mako
     .config/power
+    .config/networkmanager-dmenu
 )
 
 # Directories shared with packages or with the user's own files, so only the

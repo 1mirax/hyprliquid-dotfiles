@@ -89,11 +89,16 @@ hl.bind(mod .. " + B", hl.dsp.exec_cmd("~/.config/hypr/scripts/bluetooth-menu.sh
 hl.bind(mod .. " + ALT + B", hl.dsp.exec_cmd("~/.config/hypr/scripts/bluetooth.sh"),
   { description = "Network: Bluetooth (fallback)" })
 
--- Wi-Fi: still deciding between networkmanager_dmenu and our own script.
+-- Wi-Fi: networkmanager_dmenu, styled through .config/networkmanager-dmenu.
+-- It reaches saved connections, VPN and WireGuard tunnels, hotspots and the
+-- password QR code, none of which the script below does.
 hl.bind(mod .. " + I", hl.dsp.exec_cmd("networkmanager_dmenu"),
   { description = "Network: Wi-Fi" })
-hl.bind(mod .. " + SHIFT + I", hl.dsp.exec_cmd("~/.config/hypr/scripts/network.sh"),
-  { description = "Network: Wi-Fi (our script)" })
+
+-- Same fallback arrangement as Bluetooth: nmcli and fuzzel, nothing from the
+-- AUR, so a fresh install has a working picker before yay is ever run.
+hl.bind(mod .. " + ALT + I", hl.dsp.exec_cmd("~/.config/hypr/scripts/network.sh"),
+  { description = "Network: Wi-Fi (fallback)" })
 
 hl.bind(mod .. " + L", hl.dsp.exec_cmd("loginctl lock-session"), { description = "Session: Lock" })
 hl.bind(mod .. " + SHIFT + E", hl.dsp.exit(), { description = "Session: Exit Hyprland" })
