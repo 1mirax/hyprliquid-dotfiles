@@ -150,6 +150,10 @@ window#waybar.empty #window {
   background-color: alpha(@foreground, 0.12);
 }
 
+/* Software gain above 100%: worth showing, because that range clips on peaks
+ * and is easy to leave switched on by accident after one loud film. */
+#pulseaudio.boosted { color: @foreground; }
+
 /* --- right ------------------------------------------------------------- */
 
 /* One spacing rule for every indicator, so the row reads as evenly spaced

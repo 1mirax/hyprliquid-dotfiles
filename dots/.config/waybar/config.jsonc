@@ -136,7 +136,13 @@
     "on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
     "on-click-right": "~/.config/hypr/scripts/audio-menu.sh",
     "tooltip-format": "Volume {volume}% - right-click to pick a device",
-    "scroll-step": 5
+    "scroll-step": 5,
+    // Above 100 the signal is amplified past what the hardware puts out, which
+    // is the only way to make a quietly mastered film audible. Matches the
+    // -l 1.5 ceiling on the volume keys; leaving this at its default of 100
+    // would let the keys go higher than the scroll wheel could.
+    "max-volume": 150,
+    "states": { "boosted": 101 }
   },
 
   // Scrolling changes it, the tooltip says by how much, and a click jumps to

@@ -106,11 +106,17 @@ hl.bind(mod .. " + CTRL + SHIFT + R", hl.dsp.exec_cmd("hyprctl reload"), { descr
 -- @DEFAULT_AUDIO_SINK@ is resolved at press time, so these follow Bluetooth
 -- headphones the moment they become the default output.
 --
--- -l 1.0 is not optional: unlike pamixer, wpctl has no ceiling of its own, and
--- without the limit a held key walks past 100% into software gain - which
--- clips, and is dangerous in headphones. Lowering needs no limit; zero is one.
+-- -l 1.5 is a deliberate ceiling, not a safety rail at 100%. Film dialogue is
+-- often mastered quiet enough that the hardware maximum is not loud enough,
+-- and software gain is the only way up. Above 1.0 the signal is amplified past
+-- unity and will clip on peaks; 1.5 is as far as that stays useful.
+--
+-- The flag itself is not optional though: wpctl has no ceiling of its own, so
+-- without it a held key keeps climbing with nothing to stop it. Lowering needs
+-- no limit; zero is one. waybar's own max-volume is set to 150 to match, or
+-- scrolling the icon would still stop at 100.
 hl.bind("XF86AudioMute", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"), { locked = true, description = "Media: Mute" })
-hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+"), { locked = true, repeating = true, description = "Media: Volume up" })
+hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("wpctl set-volume -l 1.5 @DEFAULT_AUDIO_SINK@ 5%+"), { locked = true, repeating = true, description = "Media: Volume up" })
 hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"), { locked = true, repeating = true, description = "Media: Volume down" })
 hl.bind("XF86AudioMicMute", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"), { locked = true, description = "Media: Mute microphone" })
 
