@@ -9,7 +9,7 @@
   // groups separated by air rather than by boxes. Only the workspaces keep a
   // background, because the active pill needs something to sit in.
   "modules-left": ["custom/launcher", "hyprland/window"],
-  "modules-center": ["cpu", "memory", "temperature", "hyprland/workspaces", "clock", "custom/balance"],
+  "modules-center": ["cpu", "memory", "temperature", "group/workspaces", "clock", "custom/balance"],
   "modules-right": [
     "mpris",
     "idle_inhibitor",
@@ -37,10 +37,19 @@
     "tooltip": false
   },
 
-  "hyprland/workspaces": {
-    "on-click": "activate",
-    "format": "{id}",
-    "persistent-workspaces": { "1": [], "2": [], "3": [], "4": [], "5": [] }
+  // Five custom buttons instead of hyprland/workspaces, which cannot switch
+  // workspaces here: it hardcodes `dispatch workspace N`, the Lua config wraps
+  // that as invalid Lua and rejects it, and the module offers no on-click to
+  // override with. The group keeps them in one container so the pill styling
+  // in style.css still has something to sit on.
+  //
+  // No interval: the compositor raises SIGRTMIN+1 from modules/workspaces.lua
+  // whenever a workspace or a window changes, and every button re-runs on it.
+  // "once" makes waybar run each exec a single time at startup and then only
+  // on the signal.
+  "group/workspaces": {
+    "orientation": "inherit",
+    "modules": ["custom/ws1", "custom/ws2", "custom/ws3", "custom/ws4", "custom/ws5"]
   },
 
   // The button the laptop needed: while it is on, hypridle neither dims,
@@ -166,5 +175,46 @@
     "tooltip-format-charging": "{power:>1.0f} W in - {time} to full",
     "interval": 5,
     "states": { "warning": 20, "critical": 10 }
+  },
+
+  "custom/ws1": {
+    "exec": "~/.config/hypr/scripts/workspace.sh 1",
+    "return-type": "json",
+    "signal": 1,
+    "interval": "once",
+    "on-click": "~/.config/hypr/scripts/workspace.sh focus 1",
+    "tooltip": false
+  },
+  "custom/ws2": {
+    "exec": "~/.config/hypr/scripts/workspace.sh 2",
+    "return-type": "json",
+    "signal": 1,
+    "interval": "once",
+    "on-click": "~/.config/hypr/scripts/workspace.sh focus 2",
+    "tooltip": false
+  },
+  "custom/ws3": {
+    "exec": "~/.config/hypr/scripts/workspace.sh 3",
+    "return-type": "json",
+    "signal": 1,
+    "interval": "once",
+    "on-click": "~/.config/hypr/scripts/workspace.sh focus 3",
+    "tooltip": false
+  },
+  "custom/ws4": {
+    "exec": "~/.config/hypr/scripts/workspace.sh 4",
+    "return-type": "json",
+    "signal": 1,
+    "interval": "once",
+    "on-click": "~/.config/hypr/scripts/workspace.sh focus 4",
+    "tooltip": false
+  },
+  "custom/ws5": {
+    "exec": "~/.config/hypr/scripts/workspace.sh 5",
+    "return-type": "json",
+    "signal": 1,
+    "interval": "once",
+    "on-click": "~/.config/hypr/scripts/workspace.sh focus 5",
+    "tooltip": false
   }
 }

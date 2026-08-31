@@ -112,6 +112,9 @@ window#waybar.empty #window {
 
 /* --- centre ------------------------------------------------------------ */
 
+/* The pill. This is a group/workspaces container now, not the built-in
+ * module - see the note in config.jsonc - but it carries the same id, so the
+ * shape is unchanged. */
 #workspaces {
   background-color: alpha(@foreground, 0.07);
   border-radius: 999px;
@@ -119,7 +122,11 @@ window#waybar.empty #window {
   margin: 5px 0;
 }
 
-#workspaces button {
+/* Every button emits "ws" alongside its state class, so these rules do not
+ * have to name custom/ws1 through custom/ws5 five times over. The metrics are
+ * the ones the old buttons had: change them and the pill changes width, which
+ * moves it off centre - the balance arithmetic below depends on it. */
+.ws {
   color: @faint;
   font-size: 15px;
   font-weight: 600;
@@ -131,21 +138,16 @@ window#waybar.empty #window {
 }
 
 /* Occupied but not focused: brighter than an empty one, dimmer than active. */
-#workspaces button:not(.empty) { color: @muted; }
+.ws.occupied { color: @muted; }
 
-#workspaces button.active {
+.ws.active {
   color: #14141a;
   background-color: alpha(@foreground, 0.92);
 }
 
-#workspaces button:hover {
+.ws:hover {
   color: @foreground;
   background-color: alpha(@foreground, 0.12);
-}
-
-#workspaces button.urgent {
-  color: #14141a;
-  background-color: #c26873;
 }
 
 /* --- right ------------------------------------------------------------- */
