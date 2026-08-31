@@ -37,8 +37,14 @@ apply_wallpaper() {
     local img="$1" i m ok=0
 
     # At login hyprpaper's IPC is not up straight away.
+    #
+    # This must be a request hyprpaper actually implements. It used to ask for
+    # `listloaded`, which this version answers with "invalid hyprpaper request"
+    # - so the loop never broke early and spent its full 10 seconds on every
+    # single wallpaper change, login or not. `listactive` is the one that
+    # exists here.
     for i in $(seq 1 40); do
-        hyprctl hyprpaper listloaded >/dev/null 2>&1 && break
+        hyprctl hyprpaper listactive >/dev/null 2>&1 && break
         sleep 0.25
     done
 
