@@ -12,12 +12,68 @@
 # the systemd unit hardcodes it any more, they both just call `restore`.
 #
 # Colours are deliberately NOT derived from the image: the glass stays neutral.
+#
+# Images larger than the screen are downscaled into a cache before being handed
+# over. hyprpaper decodes the whole source into memory before it scales, so a
+# 5184x3456 photo costs ~68 MB of RSS and a visible pause on every switch, all
+# to fill 1920x1080. The cache is keyed by source path, mtime and target size,
+# so a new wallpaper pays for this once. Originals are never modified, and
+# STATE always names the original.
 set -euo pipefail
 
 WALLDIR="${WALLDIR:-$HOME/Pictures/wallpapers}"
 STATE="$HOME/.config/hypr/wallpaper"
+CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/hypr/wallpapers"
 
 die() { echo "$*" >&2; exit 1; }
+
+# Largest monitor, since one image is shared by all of them.
+screen_size() {
+    hyprctl monitors -j 2>/dev/null \
+        | jq -r '.[] | "\(.width)x\(.height)"' \
+        | sort -t x -k1,1n | tail -1
+}
+
+# Prints the path to hand to hyprpaper: the original when it is already small
+# enough, otherwise a cached downscale. Any failure falls back to the original,
+# so a missing ffmpeg or an odd file costs speed but never the wallpaper.
+scaled() {
+    local src="$1" scr w h sw sh key dst
+    command -v ffmpeg  >/dev/null || { printf '%s\n' "$src"; return; }
+    command -v ffprobe >/dev/null || { printf '%s\n' "$src"; return; }
+
+    scr="$(screen_size)"; [ -n "$scr" ] || { printf '%s\n' "$src"; return; }
+    sw="${scr%x*}"; sh="${scr#*x}"
+
+    local dim
+    dim="$(ffprobe -v error -select_streams v:0 \
+                   -show_entries stream=width,height -of csv=p=0:s=x "$src" 2>/dev/null)"
+    w="${dim%x*}"; h="${dim#*x}"
+    case "$w$h" in *[!0-9]*|"") printf '%s\n' "$src"; return ;; esac
+
+    # Already at or below the screen in both axes - nothing to gain.
+    if [ "$w" -le "$sw" ] && [ "$h" -le "$sh" ]; then
+        printf '%s\n' "$src"; return
+    fi
+
+    key="$(printf '%s' "$src" | sha256sum | cut -c1-16)"
+    dst="$CACHE/$key-$(stat -c %Y "$src")-${sw}x${sh}.jpg"
+
+    if [ ! -s "$dst" ]; then
+        mkdir -p "$CACHE"
+        # Drop earlier sizes of this same image before writing the new one.
+        find "$CACHE" -maxdepth 1 -name "$key-*" -delete 2>/dev/null || true
+        # force_original_aspect_ratio=increase covers the screen without
+        # cropping, so hyprpaper still decides the framing itself.
+        if ! ffmpeg -v error -y -i "$src" \
+                    -vf "scale=$sw:$sh:force_original_aspect_ratio=increase" \
+                    -q:v 2 "$dst" 2>/dev/null; then
+            rm -f "$dst"
+            printf '%s\n' "$src"; return
+        fi
+    fi
+    printf '%s\n' "$dst"
+}
 
 list() {
     find "$WALLDIR" -maxdepth 1 -type f \
@@ -72,13 +128,18 @@ sync_hyprlock() {
 }
 
 set_wallpaper() {
-    local img
+    local img use
     img="$(readlink -f "$1")"
     [ -f "$img" ] || die "no such file: $img"
-    apply_wallpaper "$img"
+    use="$(scaled "$img")"
+    apply_wallpaper "$use"
+    # STATE keeps the original: the cache is an implementation detail, and a
+    # different monitor later needs a different downscale of the same source.
     printf '%s\n' "$img" > "$STATE"
-    sync_hyprlock "$img"
+    sync_hyprlock "$use"
     echo "wallpaper: $img"
+    [ "$use" != "$img" ] && echo "   scaled: $use"
+    return 0
 }
 
 case "${1:-}" in
@@ -103,11 +164,12 @@ case "${1:-}" in
     restore)
         img="$(current)"
         [ -n "$img" ] || die "no wallpaper found in $WALLDIR"
-        apply_wallpaper "$img"
+        use="$(scaled "$img")"
+        apply_wallpaper "$use"
         # Also re-sync the lock screen. On a fresh install hyprlock.conf is
         # rendered from its template with whatever image install.sh found
         # first, which is not necessarily the one the state file names.
-        sync_hyprlock "$img"
+        sync_hyprlock "$use"
         ;;
     current) current ;;
     *)
