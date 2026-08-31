@@ -116,6 +116,12 @@ hl.bind("XF86AudioMicMute", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SOURC
 
 hl.bind(mod .. " + A", hl.dsp.exec_cmd("~/.config/hypr/scripts/audio-menu.sh"),
   { description = "Media: Audio devices" })
+
+-- Profiles are a separate key rather than a step inside the audio menu: pwmenu
+-- does not cover them, and putting them behind a first-level choice would add
+-- a keystroke to the common case of just picking an output.
+hl.bind(mod .. " + SHIFT + A", hl.dsp.exec_cmd("~/.config/hypr/scripts/audio-profile.sh"),
+  { description = "Media: Audio profile" })
 hl.bind("XF86AudioPlay", hl.dsp.exec_cmd("playerctl play-pause"), { locked = true, description = "Media: Play / pause" })
 hl.bind("XF86AudioNext", hl.dsp.exec_cmd("playerctl next"), { locked = true, description = "Media: Next track" })
 hl.bind("XF86AudioPrev", hl.dsp.exec_cmd("playerctl previous"), { locked = true, description = "Media: Previous track" })
