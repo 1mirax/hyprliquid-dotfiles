@@ -12,7 +12,9 @@ hl.window_rule({ match = { class = ".*" }, idle_inhibit = "fullscreen" })
 
 -- blur_popups covers the bar's own tooltips and dropdowns (the calendar on
 -- the clock, the volume tooltip), which are separate surfaces.
-hl.layer_rule({ match = { namespace = "waybar" }, blur = true, blur_popups = true })
+-- No blur for waybar: style.css paints it fully opaque, so there is nothing
+-- behind it to see and the blur pass was pure waste - two full-screen shader
+-- passes a frame for pixels that never reach the screen.
 hl.layer_rule({ match = { namespace = "notifications" }, blur = true, ignore_alpha = 0.1 })
 -- fuzzel registers as "launcher", not "fuzzel" - verified by watching
 -- hyprctl layers while it was open. A rule matching "fuzzel" never fired.
@@ -32,7 +34,13 @@ hl.layer_rule({ match = { namespace = "notifications" }, blur = true, ignore_alp
 -- At scale 1 fuzzel's initial guess is already correct - measured, one commit
 -- at 354x324 instead of two - so there is nothing left to chase. If the
 -- monitor ever goes back to a fractional scale, add no_anim = true here.
-hl.layer_rule({ match = { namespace = "launcher" }, blur = true, ignore_alpha = 0.03 })
+--
+-- dim_around matches the cheatsheet rule below: blur alone softens the desktop
+-- but keeps its brightness, so a light wallpaper or a pale window behind the
+-- launcher left the entries competing with it. Dimming pushes everything back
+-- and the list reads on any background.
+hl.layer_rule({ match = { namespace = "launcher" },
+  blur = true, ignore_alpha = 0.03, dim_around = true })
 -- The cheatsheet is fuzzel in dmenu mode, launched with --namespace cheatsheet
 -- so it can be told apart from the launcher. Same glass, same ignore_alpha
 -- (the background is ffffff10, so the threshold has to sit below 0.063), plus
