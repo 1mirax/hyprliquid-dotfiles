@@ -53,5 +53,21 @@ text-color=#ffffffff
 background-color=#2a1416cc
 default-timeout=0
 
+# Volume and brightness readouts from scripts/volume.sh. They are a glance,
+# not a message: one line, no icon, gone in a second, and kept out of history
+# so the log is not three hundred volume steps.
+#
+# The progress fill comes from the int:value hint the script sends -
+# progress-color above was already set and simply had nothing feeding it.
+[app-name=volume]
+format=<b>%s</b>
+height=90
+width=340
+padding=14,20
+icons=0
+default-timeout=1200
+history=0
+group-by=app-name
+
 [mode=do-not-disturb]
 invisible=1

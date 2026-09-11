@@ -120,10 +120,13 @@ hl.bind(mod .. " + CTRL + SHIFT + R", hl.dsp.exec_cmd("hyprctl reload"), { descr
 -- without it a held key keeps climbing with nothing to stop it. Lowering needs
 -- no limit; zero is one. waybar's own max-volume is set to 150 to match, or
 -- scrolling the icon would still stop at 100.
-hl.bind("XF86AudioMute", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"), { locked = true, description = "Media: Mute" })
-hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("wpctl set-volume -l 1.5 @DEFAULT_AUDIO_SINK@ 5%+"), { locked = true, repeating = true, description = "Media: Volume up" })
-hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"), { locked = true, repeating = true, description = "Media: Volume down" })
-hl.bind("XF86AudioMicMute", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"), { locked = true, description = "Media: Mute microphone" })
+-- Through scripts/volume.sh rather than wpctl directly: it does the same call
+-- and then shows the level in mako, with a progress fill behind it. The
+-- ceiling and step live in that script now, so they are set in one place.
+hl.bind("XF86AudioMute", hl.dsp.exec_cmd("~/.config/hypr/scripts/volume.sh mute"), { locked = true, description = "Media: Mute" })
+hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("~/.config/hypr/scripts/volume.sh up"), { locked = true, repeating = true, description = "Media: Volume up" })
+hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("~/.config/hypr/scripts/volume.sh down"), { locked = true, repeating = true, description = "Media: Volume down" })
+hl.bind("XF86AudioMicMute", hl.dsp.exec_cmd("~/.config/hypr/scripts/volume.sh mic"), { locked = true, description = "Media: Mute microphone" })
 
 hl.bind(mod .. " + A", hl.dsp.exec_cmd("~/.config/hypr/scripts/audio-menu.sh"),
   { description = "Media: Audio devices" })
