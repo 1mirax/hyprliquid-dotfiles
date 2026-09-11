@@ -10,12 +10,21 @@
   // background, because the active pill needs something to sit in.
   "modules-left": ["custom/launcher", "hyprland/window"],
   "modules-center": ["cpu", "memory", "temperature", "group/workspaces", "clock", "custom/balance"],
+  // Right side reads as four groups, thinnest first: what the machine is
+  // running, what you switch, what you connect to, and how long it lasts.
   "modules-right": [
-    "mpris",
-    "idle_inhibitor",
-    "bluetooth", "network", "pulseaudio", "backlight", "battery",
-    "tray"
+    "tray",
+    "custom/sep#1",
+    "idle_inhibitor", "backlight", "pulseaudio",
+    "custom/sep#2",
+    "bluetooth", "network",
+    "custom/sep#3",
+    "battery"
   ],
+
+  "custom/sep#1": { "format": "|", "tooltip": false },
+  "custom/sep#2": { "format": "|", "tooltip": false },
+  "custom/sep#3": { "format": "|", "tooltip": false },
 
   // Invisible counterweight. waybar centres the whole centre group, so the
   // readings left of the pill have to be matched on the right. The clock
@@ -54,21 +63,54 @@
 
   // The button the laptop needed: while it is on, hypridle neither dims,
   // locks nor suspends. waybar handles the inhibit itself, no script.
+  // The button the laptop needed: while it is on, hypridle neither dims,
+  // locks nor suspends. waybar handles the inhibit itself, no script.
+  //
+  // U+F04B2 and U+F04B3 are a drawn pair - the same "zzz" with and without a
+  // diagonal strike - so the two states read as one thing switching rather
+  // than as two different icons. The moon it replaced has no struck-through
+  // counterpart in this font, and faking one with Pango's <s> puts the line
+  // across the glyph's advance width, not its shape: at 17px it is invisible.
+  // The button the laptop needed: while it is on, hypridle neither dims,
+  // locks nor suspends. waybar handles the inhibit itself, no script.
+  //
+  // The icon shows the state of the BUTTON, not the state of sleep: struck
+  // through and dim means the lock is off, solid and amber means it is on.
+  // Reading it the other way round - crossed zzz for "will not sleep" - is
+  // what it did first, and it was unreadable at a glance.
+  //
+  // U+F04B2 and U+F04B3 are a drawn pair, the same "zzz" with and without a
+  // diagonal strike, so the two states read as one thing switching rather
+  // than as two different icons. The moon this replaced has no struck-through
+  // counterpart in the font, and faking one with Pango's <s> draws the line
+  // across the glyph's advance width rather than its shape: invisible at 17px.
   "idle_inhibitor": {
     "format": "{icon}",
     "format-icons": {
-      "activated": "<span size='17250'>󰅶</span>",
-      "deactivated": "<span size='17250'>󰤄</span>"
+      "activated": "<span size='17250'>󰒲</span>",
+      "deactivated": "<span size='17250'>󰒳</span>"
     },
     "tooltip-format-activated": "Staying awake - click to allow sleep",
     "tooltip-format-deactivated": "Sleeps normally - click to stay awake"
   },
 
+  // Glyphs verified by rendering them, not by looking them up: U+F00AF is
+  // the plain mark, U+F00B1 carries the two dots that read as "connected",
+  // and U+F00B2 is the one struck through diagonally. Its neighbours are
+  // audio, settings and transfer - all plausible, all wrong.
+  //
+  // format-disabled used to be an empty string, so switching Bluetooth off
+  // made the icon vanish, which is indistinguishable from a bar that lost
+  // the module.
   "bluetooth": {
     "format": "<span size='17250'>󰂯</span>",
-    "format-disabled": "",
+    "format-off": "<span size='17250'>󰂲</span>",
+    "format-disabled": "<span size='17250'>󰂲</span>",
+    "format-no-controller": "<span size='17250'>󰂲</span>",
     "format-connected": "<span size='17250'>󰂱</span>",
     "tooltip-format": "Bluetooth on\n{num_connections} connected",
+    "tooltip-format-off": "Bluetooth off - click to turn it on",
+    "tooltip-format-disabled": "Bluetooth blocked - click to turn it on",
     "tooltip-format-connected": "{device_alias}",
     "tooltip-format-enumerate-connected": "{device_alias}",
     "on-click": "~/.config/hypr/scripts/bluetooth-menu.sh"
@@ -112,20 +154,6 @@
     "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
   },
 
-  // Built-in MPRIS module: updates from D-Bus events instead of polling
-  // playerctl through a shell twice a second.
-  // Do NOT add "interval": 0 here. waybar reads that as a zero-length pause
-  // rather than "no polling", the module thread spins and the bar never
-  // renders - it creates its layer and logs nothing, so it looks healthy.
-  "mpris": {
-    "format": "  {title}",
-    "format-paused": "  {title}",
-    "format-stopped": "",
-    "dynamic-len": 22,
-    "dynamic-order": ["title"],
-    "on-click": "play-pause",
-    "tooltip-format": "{player}: {title} - {artist}"
-  },
 
   "tray": { "icon-size": 20, "spacing": 10 },
 
@@ -156,15 +184,30 @@
     "tooltip-format": "Brightness {percent}% - scroll to change, click for full"
   },
 
+  // Three states, one glyph family, each verified by rendering it.
+  //
+  //   󰤮  U+F092E  struck through - the adapter is off or rfkill'd
+  //   󰤯  U+F092F  empty outline  - radio on, nothing connected
+  //   󰤟󰤢󰤥󰤨  four steps    - connected, fill shows signal
+  //
+  // format-disabled was missing, so turning the radio off fell through to the
+  // bare "format" and rendered nothing: the icon vanished and the module
+  // collapsed to zero width, which looked like a bug rather than a state.
+  //
+  // U+F092F is deliberately no longer the ladder's zero. Reserving it for
+  // "not connected" keeps the three states distinct - a full ladder means
+  // connected, always.
   "network": {
     "format": "{icon}",
-    "format-icons": ["󰤯", "󰤟", "󰤢", "󰤥", "󰤨"],
+    "format-icons": ["󰤟", "󰤢", "󰤥", "󰤨"],
     "format-wifi": "<span size='17250'>{icon}</span>",
     "format-ethernet": "<span size='17250'>󰌘</span>",
-    "format-disconnected": "<span size='17250'>󰤮</span>",
+    "format-disconnected": "<span size='17250'>󰤯</span>",
+    "format-disabled": "<span size='17250'>󰤮</span>",
     "tooltip-format-wifi": "{essid}  {signalStrength}%\n⇣{bandwidthDownBytes}  ⇡{bandwidthUpBytes}",
     "tooltip-format-ethernet": "Wired  {ipaddr}",
-    "tooltip-format-disconnected": "Offline - click to pick a network",
+    "tooltip-format-disconnected": "Not connected - click to pick a network",
+    "tooltip-format-disabled": "Wi-Fi is off - F8 or click to turn it on",
     "interval": 3,
     "on-click": "networkmanager_dmenu"
   },

@@ -9,7 +9,18 @@
 @define-color foreground #e8e8ec;
 @define-color muted      #b9b9c1;
 @define-color faint      #8b8b93;
-@define-color background rgba(20, 20, 24, 0.35);
+/* Solid black, no transparency at all.
+ *
+ * This is the end of a long walk: 0.35 let a pale wallpaper through entirely,
+ * 0.72 matched kitty's numbers but read darker than kitty on screen because
+ * the terminal hides most of its own surface under text while the bar is a
+ * thin strip over bare wallpaper, and 0.85 was heavier still. Opaque turned
+ * out to be what the bar actually wanted: it gives the top of the screen a
+ * clean edge instead of a smear of whatever happens to be behind it.
+ *
+ * Being opaque is why modules/rules.lua no longer blurs this layer - nothing
+ * shows through, so the blur pass was computed and thrown away every frame. */
+@define-color background rgba(0, 0, 0, 1.0);
 
 * {
   border: none;
@@ -19,6 +30,9 @@
   font-size: 17px;
 }
 
+/* The radius shows only because the surface is opaque: GTK clips the fill to
+ * the rounded rect and leaves what falls outside transparent, so the wallpaper
+ * comes through at the corners. */
 window#waybar {
   background-color: @background;
   color: @foreground;
@@ -150,6 +164,15 @@ window#waybar.empty #window {
   background-color: alpha(@foreground, 0.12);
 }
 
+/* Off or rfkill-blocked: the struck-through glyph says it, and dropping to
+ * @faint says it again without colour being the only cue. Disconnected stays
+ * at full @muted on purpose - it is an actionable state, one click from a
+ * network, not a switched-off one. */
+#bluetooth.off,
+#bluetooth.disabled,
+#bluetooth.no-controller,
+#network.disabled { color: @faint; }
+
 /* Software gain above 100%: worth showing, because that range clips on peaks
  * and is easy to leave switched on by accident after one loud film. */
 #pulseaudio.boosted { color: @foreground; }
@@ -158,7 +181,6 @@ window#waybar.empty #window {
 
 /* One spacing rule for every indicator, so the row reads as evenly spaced
  * icons instead of a set of differently-padded widgets. */
-#mpris,
 #idle_inhibitor,
 #bluetooth,
 #network,
@@ -171,7 +193,6 @@ window#waybar.empty #window {
   transition: color 120ms ease-out;
 }
 
-#mpris:hover,
 #idle_inhibitor:hover,
 #bluetooth:hover,
 #network:hover,
@@ -179,8 +200,6 @@ window#waybar.empty #window {
 #backlight:hover,
 #battery:hover { color: @foreground; }
 
-#mpris          { color: @faint; }
-#mpris.playing  { color: @muted; }
 
 /* States. Only these carry colour; everything else stays on the grey ladder
  * so that colour still means something. */
@@ -194,9 +213,21 @@ window#waybar.empty #window {
 
 @keyframes blink { to { opacity: 0.35; } }
 
-/* Awake-lock on: the one indicator that should be impossible to miss, since
- * forgetting it flat means the laptop never sleeps. */
-#idle_inhibitor.activated { color: #c3a56d; }
+/* The awake-lock reads as a button, not as a status: off is dim and struck
+ * through, on is solid and bright. No accent colour - the bar has no other
+ * coloured indicator, and one amber glyph among a row of greys read as an
+ * error rather than as a state that is switched on. */
+#idle_inhibitor.deactivated { color: @faint; }
+#idle_inhibitor.activated { color: @foreground; }
+
+/* Group dividers. Dimmer than anything they separate, so they read as
+ * punctuation rather than as one more indicator. */
+#custom-sep {
+  color: @faint;
+  font-size: 13px;
+  padding: 0 2px;
+  margin: 0;
+}
 
 #tray { padding: 0 6px 0 10px; }
 #tray > .passive { -gtk-icon-effect: dim; }
