@@ -4,8 +4,9 @@ hl.window_rule({ match = { class = ".*" }, suppress_event = "maximize" })
 hl.window_rule({ match = { class = "^(pavucontrol|nm-connection-editor|blueman-manager)$" }, float = true })
 hl.window_rule({ match = { title = "^(Picture-in-Picture)$" }, float = true, pin = true })
 hl.window_rule({ match = { class = "^(nemo)$", title = "^(Properties)$" }, float = true })
--- No opacity rule for kitty: transparency comes from background_opacity in
--- kitty.conf. Stacking both would multiply and wash the text out.
+-- No opacity rule for the terminal: transparency comes from `[window]
+-- opacity` in rio's config.toml. Stacking both would multiply and wash
+-- the text out.
 -- No opacity rule for nemo: the glass comes from ~/.config/gtk-3.0/gtk.css,
 -- which keeps text opaque. A window rule would fade the text along with it.
 hl.window_rule({ match = { class = ".*" }, idle_inhibit = "fullscreen" })

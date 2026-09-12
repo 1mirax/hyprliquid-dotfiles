@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Wi-Fi picker in fuzzel, driven by nmcli.
 #
-# Replaces `kitty -e nmtui` on the bar's network module: a terminal UI for
+# Replaces `rio -e nmtui` on the bar's network module: a terminal UI for
 # picking a network is a whole window for a two-second decision, and it looks
 # nothing like the rest of the setup.
 #

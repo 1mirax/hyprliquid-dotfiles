@@ -1,4 +1,4 @@
-# iOS liquid glass - palette shared with kitty / waybar / fuzzel / mako.
+# iOS liquid glass - palette shared with rio / waybar / fuzzel / mako.
 
 set -g fish_greeting ''
 

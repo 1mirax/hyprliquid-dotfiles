@@ -1,0 +1,75 @@
+# iOS liquid glass - palette shared with waybar / fuzzel / mako / hyprlock.
+#
+# Replaced kitty, which this file was first written to match parameter for
+# parameter: same cell size, same padding, same composite on screen. rio drains
+# a 20 MB coloured dump in 0.38 s against kitty's 1.24, costs 2.7x less CPU
+# doing it, starts in 0.16 s against 0.40, and holds 7.3 MB against 43.7 empty.
+#
+# Every key here was verified against the rio v0.5.26 sources rather than
+# guessed - rio silently ignores keys it does not know, so a typo is invisible.
+confirm-before-quit = false
+line-height = 1.08
+hide-mouse-cursor-when-typing = true
+scrollback-history-limit = 10000
+
+# `padding` is split-layout padding and does nothing to a single panel -
+# verified with padding = 80, which moved nothing. `margin` is what insets
+# the text from the window edge, so kitty's window_padding_width 18 21
+# lives here instead.
+[panel]
+margin = [18, 21, 18, 21]
+
+[navigation]
+mode = "Plain"
+
+[window]
+opacity = 0.72
+blur = false
+decorations = "disabled"
+
+[cursor]
+shape = "beam"
+blinking = true
+blinking-interval = 600
+
+# Rio's trail is a port of kitty's: decay is [min, max] in milliseconds
+# where kitty takes seconds, threshold is in cells. Colour and opacity
+# are rio's own additions - kitty has neither.
+[effects]
+trail-cursor = true
+trail-cursor-decay = [100, 400]
+trail-cursor-start-threshold = 2
+
+# rio's `size` is not kitty's point size: 15.5 in kitty and 21.0 here both
+# land on the same 13px cell. Matched by measuring glyph advance, not guessed.
+[fonts]
+size = 21.0
+family = "JetBrainsMono Nerd Font"
+
+# background is #0e0e14, NOT the #14141a every other component uses.
+# rio composites its translucent background lighter than kitty does at the
+# same opacity - measured +6/255 on an identical backdrop, which reads as a
+# milky film. Darkening the colour by that much puts the composite back on
+# top of kitty's. Change opacity and this needs re-measuring.
+[colors]
+background = "#0e0e13"
+foreground = "#e8e8ec"
+cursor = "#e8e8ec"
+selection-background = "#e8e8ec"
+selection-foreground = "#14141a"
+black = "#2b2b33"
+red = "#c26873"
+green = "#88a37c"
+yellow = "#c3a56d"
+blue = "#7f8592"
+magenta = "#967aa7"
+cyan = "#859290"
+white = "#b9b9c1"
+light-black = "#6a6a70"
+light-red = "#cf8b92"
+light-green = "#a2ba93"
+light-yellow = "#d1bb8f"
+light-blue = "#979dab"
+light-magenta = "#af90c0"
+light-cyan = "#9ca9a7"
+light-foreground = "#e8e8ec"
