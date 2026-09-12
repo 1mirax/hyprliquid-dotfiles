@@ -37,6 +37,32 @@ echo "==> Ensuring the msr module is available (throttled needs it)"
 printf 'msr\n' > /etc/modules-load.d/msr.conf
 modprobe msr || echo "    WARNING: modprobe msr failed - throttled will not work"
 
+echo "==> Leaving the Bluetooth adapter off at boot"
+# One key, edited in place - not a whole-file copy. /etc/bluetooth/main.conf is
+# BlueZ's own, it is long, and it gains options between releases; shipping a
+# copy would freeze someone else's defaults at whatever they were the day this
+# was written.
+#
+# This is not `systemctl disable bluetooth`. The service stays enabled, so
+# bluetoothctl and the menu on Super+B keep working and can power the adapter
+# up on demand. Disabling the service instead would mean nothing could turn
+# Bluetooth on without first starting the service by hand.
+#
+# Separate from rfkill, which is what the F8 key toggles: AutoEnable decides
+# whether a found controller is powered, rfkill whether it is blocked at all.
+# The bar shows them as different states.
+BT_CONF=/etc/bluetooth/main.conf
+if [ -f "$BT_CONF" ]; then
+    if grep -qE '^[[:space:]]*#?[[:space:]]*AutoEnable[[:space:]]*=' "$BT_CONF"; then
+        sed -i -E 's/^[[:space:]]*#?[[:space:]]*AutoEnable[[:space:]]*=.*/AutoEnable=false/' "$BT_CONF"
+        echo "    AutoEnable=false in $BT_CONF"
+    else
+        echo "    WARNING: no AutoEnable line in $BT_CONF - add it under [Policy] by hand"
+    fi
+else
+    echo "    skip    $BT_CONF not present (bluez not installed?)"
+fi
+
 echo "==> Freeing rfkill for TLP"
 # TLP manages radio devices itself; systemd-rfkill would fight it.
 systemctl mask systemd-rfkill.service systemd-rfkill.socket 2>/dev/null || true
