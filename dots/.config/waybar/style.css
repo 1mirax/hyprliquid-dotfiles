@@ -200,6 +200,20 @@ window#waybar.empty #window {
 #backlight:hover,
 #battery:hover { color: @foreground; }
 
+/* The only module carrying a full reading rather than a glyph, so it is set
+ * smaller than the icons around it and packed tighter - at the shared 17px and
+ * 9px padding it read as a caption sitting in the middle of a row of symbols.
+ *
+ * Fixed width with tabular figures: the battery is last in a right-aligned
+ * group, so every digit it gains pushes the whole row leftwards, separators
+ * included. 88px covers the widest reading, "100% ↓12W", measured at 15px. */
+#battery {
+  font-size: 15px;
+  padding: 0 5px;
+  min-width: 88px;
+  font-feature-settings: "tnum";
+}
+
 
 /* States. Only these carry colour; everything else stays on the grey ladder
  * so that colour still means something. */

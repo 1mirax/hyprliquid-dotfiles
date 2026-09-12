@@ -212,16 +212,25 @@
     "on-click": "networkmanager_dmenu"
   },
 
+  // The twenty-glyph ladder is gone. A battery icon that fills up says the
+  // same thing the percentage right next to it already says; an arrow says
+  // what the percentage cannot - which way it is going, and how fast.
+  //
+  // Plain U+2193 and U+2191 rather than Nerd Font arrows: the md- codepoints
+  // that look right in a table render as an up arrow and a broken circle here,
+  // checked by drawing them. These two are in Inter, at the right weight.
+  //
+  // "plugged" is not a rare state on this machine: the charge threshold stops
+  // at 80%, so sitting on AC at 80% and not charging is the normal desk case.
+  // It says AC rather than carrying a glyph for it.
   "battery": {
-    "format": "{capacity}% {icon}",
-    "format-charging": "{capacity}% {icon}",
-    "format-icons": {
-      "charging": ["󰢜", "󰂆", "󰂇", "󰂈", "󰢝", "󰂉", "󰢞", "󰂊", "󰂋", "󰂅"],
-      "default": ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"]
-    },
-    "format-full": "{capacity}% 󰂅",
-    "tooltip-format-discharging": "{power:>1.0f} W draw - {time} left",
-    "tooltip-format-charging": "{power:>1.0f} W in - {time} to full",
+    "format": "{capacity}% ↓{power:.0f}W",
+    "format-discharging": "{capacity}% ↓{power:.0f}W",
+    "format-charging": "{capacity}% ↑{power:.0f}W",
+    "format-plugged": "{capacity}% AC",
+    "format-full": "{capacity}% AC",
+    "tooltip-format-discharging": "{power:.1f} W draw - {time} left\n{cycles} cycles, {health}% health",
+    "tooltip-format-charging": "{power:.1f} W in - {time} to full\n{cycles} cycles, {health}% health",
     "interval": 5,
     "states": { "warning": 20, "critical": 10 }
   },
