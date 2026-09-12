@@ -6,19 +6,29 @@
 #   wallpaper.sh random       random one from WALLDIR
 #   wallpaper.sh restore      re-apply the remembered one (used at login)
 #   wallpaper.sh current      print the remembered path
+#   wallpaper.sh daemon       run swaybg in the foreground (for the unit)
 #
-# hyprpaper ignores its own config file on this version, so the image goes in
-# over IPC. The path lives in STATE and nowhere else: neither hyprland.lua nor
-# the systemd unit hardcodes it any more, they both just call `restore`.
+# swaybg has no IPC: the process IS the wallpaper, and changing it means
+# replacing the process. That is the whole reason it replaced hyprpaper, which
+# held 32.7 MB resident against swaybg's 3.1 MB - measured on this machine,
+# same image - and needed a retry loop against a socket that was not up yet at
+# login. There is no socket here to wait for.
+#
+# -m fill is deliberate. The screen is 16:9 and photographs are usually 3:2, so
+# anything that merely fits the image letterboxes it: four of the nine
+# wallpapers here would show 150px bars. fill crops the overflow instead.
+#
+# The path lives in STATE and nowhere else - neither hyprland.lua nor the unit
+# hardcodes it, they both just ask for the remembered one.
 #
 # Colours are deliberately NOT derived from the image: the glass stays neutral.
 #
-# Images larger than the screen are downscaled into a cache before being handed
-# over. hyprpaper decodes the whole source into memory before it scales, so a
-# 5184x3456 photo costs ~68 MB of RSS and a visible pause on every switch, all
-# to fill 1920x1080. The cache is keyed by source path, mtime and target size,
-# so a new wallpaper pays for this once. Originals are never modified, and
-# STATE always names the original.
+# Oversized images are still downscaled into a cache first, though swaybg frees
+# the decode immediately and no longer needs protecting from it: decoding
+# 5184x3456 costs 586 ms every time the wallpaper is applied, and the cache
+# turns that into a file read. Keyed by source path, mtime and target size, so
+# a new wallpaper pays once. Originals are never modified, and STATE always
+# names the original.
 set -euo pipefail
 
 WALLDIR="${WALLDIR:-$HOME/Pictures/wallpapers}"
@@ -34,7 +44,7 @@ screen_size() {
         | sort -t x -k1,1n | tail -1
 }
 
-# Prints the path to hand to hyprpaper: the original when it is already small
+# Prints the path to hand to swaybg: the original when it is already small
 # enough, otherwise a cached downscale. Any failure falls back to the original,
 # so a missing ffmpeg or an odd file costs speed but never the wallpaper.
 scaled() {
@@ -64,7 +74,7 @@ scaled() {
         # Drop earlier sizes of this same image before writing the new one.
         find "$CACHE" -maxdepth 1 -name "$key-*" -delete 2>/dev/null || true
         # force_original_aspect_ratio=increase covers the screen without
-        # cropping, so hyprpaper still decides the framing itself.
+        # cropping, so swaybg's -m fill still decides the framing itself.
         if ! ffmpeg -v error -y -i "$src" \
                     -vf "scale=$sw:$sh:force_original_aspect_ratio=increase" \
                     -q:v 2 "$dst" 2>/dev/null; then
@@ -89,34 +99,30 @@ current() {
     fi
 }
 
+MODE=fill
+
+# The unit runs this: swaybg in the foreground, so systemd owns it and can
+# restart it. Nothing else should call it directly.
+daemon() {
+    local img
+    img="$(scaled "$(current)")"
+    exec swaybg -m "$MODE" -i "$img"
+}
+
 apply_wallpaper() {
-    local img="$1" i m ok=0
+    # Under systemd the unit owns the process, so ask it to restart rather than
+    # spawning a second swaybg the unit knows nothing about.
+    if systemctl --user list-unit-files wallpaper.service --no-legend 2>/dev/null \
+        | grep -q wallpaper; then
+        systemctl --user restart wallpaper.service
+        return
+    fi
 
-    # At login hyprpaper's IPC is not up straight away.
-    #
-    # This must be a request hyprpaper actually implements. It used to ask for
-    # `listloaded`, which this version answers with "invalid hyprpaper request"
-    # - so the loop never broke early and spent its full 10 seconds on every
-    # single wallpaper change, login or not. `listactive` is the one that
-    # exists here.
-    for i in $(seq 1 40); do
-        hyprctl hyprpaper listactive >/dev/null 2>&1 && break
-        sleep 0.25
-    done
-
-    # Without unloading, hyprpaper keeps every image ever set in memory.
-    hyprctl hyprpaper unload all >/dev/null 2>&1 || true
-    hyprctl hyprpaper preload "$img" >/dev/null 2>&1 || true
-
-    for m in $(hyprctl monitors -j | jq -r '.[].name'); do
-        for i in $(seq 1 20); do
-            if hyprctl hyprpaper wallpaper "$m,$img" >/dev/null 2>&1; then
-                ok=1; break
-            fi
-            sleep 0.25
-        done
-    done
-    [ "$ok" = 1 ] || die "hyprpaper did not accept the wallpaper"
+    # Fallback for a session without the unit - the same one autostart.lua
+    # covers. pkill -x matches on the process name, so it cannot match this
+    # script the way `pkill -f` once matched the cheatsheet wrapper.
+    pkill -x swaybg 2>/dev/null || true
+    setsid "$0" daemon >/dev/null 2>&1 &
 }
 
 # hyprlock cannot read the state file, so its background path is rewritten
@@ -132,7 +138,7 @@ set_wallpaper() {
     img="$(readlink -f "$1")"
     [ -f "$img" ] || die "no such file: $img"
     use="$(scaled "$img")"
-    apply_wallpaper "$use"
+    apply_wallpaper
     # STATE keeps the original: the cache is an implementation detail, and a
     # different monitor later needs a different downscale of the same source.
     printf '%s\n' "$img" > "$STATE"
@@ -165,15 +171,16 @@ case "${1:-}" in
         img="$(current)"
         [ -n "$img" ] || die "no wallpaper found in $WALLDIR"
         use="$(scaled "$img")"
-        apply_wallpaper "$use"
+        apply_wallpaper
         # Also re-sync the lock screen. On a fresh install hyprlock.conf is
         # rendered from its template with whatever image install.sh found
         # first, which is not necessarily the one the state file names.
         sync_hyprlock "$use"
         ;;
     current) current ;;
+    daemon)  daemon ;;
     *)
-        echo "usage: $(basename "$0") set <path>|pick|random|restore|current" >&2
+        echo "usage: $(basename "$0") set <path>|pick|random|restore|current|daemon" >&2
         exit 1
         ;;
 esac

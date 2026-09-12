@@ -13,7 +13,7 @@ differently from every guide you will find — those are all commented in place.
 
 | | |
 |---|---|
-| Compositor | Hyprland (Lua config), hypridle, hyprlock, hyprpaper |
+| Compositor | Hyprland (Lua config), hypridle, hyprlock, swaybg |
 | Session | uwsm — daemons run as systemd user units, with a guarded fallback |
 | Bar | waybar, built-in modules only |
 | Launcher | fuzzel — also the wallpaper picker, clipboard history and cheatsheet |
@@ -53,7 +53,8 @@ dots/                       everything that gets symlinked into $HOME
   .config/hypr/             hyprland.lua, hypridle, hyprlock template, scripts/
   .config/waybar/           config.jsonc + style.css
   .config/fuzzel/           launcher, and every picker in the setup
-  .config/power/            tlp.conf, throttled.conf, and their installer
+  .config/power/            tlp.conf, throttled.conf, and the installer that
+                            places them and leaves Bluetooth off at boot
   .local/share/applications/  NoDisplay overrides that hide menu clutter
 install.sh                  linking, templates, icons, unit enabling
 packages.txt                every dependency, verified against a working install

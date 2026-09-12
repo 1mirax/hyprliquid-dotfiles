@@ -11,7 +11,7 @@
 hyprland
 hyprlock
 hypridle
-hyprpaper
+swaybg                      # wallpaper; no IPC, the process is the wallpaper
 hyprcursor
 uwsm                        # session manager: runs the daemons as systemd units
 # Only the Hyprland backend, on purpose. It implements the compositor-specific

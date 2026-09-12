@@ -1,0 +1,21 @@
+[Unit]
+Description=Wallpaper (swaybg)
+# swaybg has no IPC - the process is the wallpaper. So this is a long-running
+# service, not the oneshot the hyprpaper version had to be, and changing the
+# wallpaper is `systemctl --user restart wallpaper.service`, which is what
+# scripts/wallpaper.sh does.
+#
+# No ordering cycle to dodge here either: the hyprpaper unit was itself ordered
+# After=graphical-session.target, so a WantedBy on that target made systemd
+# drop the job. Nothing sits between this and the session.
+PartOf=graphical-session.target
+After=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=%h/.config/hypr/scripts/wallpaper.sh daemon
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=graphical-session.target

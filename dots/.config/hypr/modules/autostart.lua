@@ -3,7 +3,7 @@
 -- Autostart runs from the hyprland.start event, NOT at config-parse time.
 -- exec_cmd at the top level fires before the compositor has an output or a
 -- usable Wayland socket (the [executor] lines land before GL init in the log),
--- so waybar / hyprpaper / hypridle started there exit immediately and the
+-- so waybar / hypridle / the wallpaper started there exit immediately and the
 -- session comes up bare. mako only survived because dbus re-activates it.
 --
 -- The Lua API has no exec_once either: exec_cmd runs again on every reload,
@@ -66,13 +66,10 @@ local function autostart(fresh)
   once_arg("wl-paste", "--type text", "wl-paste --type text --watch cliphist store")
   once_arg("wl-paste", "--type image", "wl-paste --type image --watch cliphist store")
 
-  -- The wallpaper path lives in ~/.config/hypr/wallpaper, not here.
-  -- The script also re-derives the accent colours with wallust.
-  hl.exec_cmd("if " .. SYSTEMD .. "; then echo 'systemd: wallpaper' >>" .. LOG ..
-    "; exit 0; fi; " ..
-    "{ pgrep -x hyprpaper >/dev/null 2>&1 || hyprpaper & } ; " ..
-    "~/.config/hypr/scripts/wallpaper.sh restore >>" .. LOG .. " 2>&1 " ..
-    "&& echo 'wallpaper restored' >>" .. LOG)
+  -- The wallpaper path lives in ~/.config/hypr/wallpaper, not here. swaybg is
+  -- started by the script itself - it has no IPC, so the process is the
+  -- wallpaper and there is nothing to launch separately and then talk to.
+  once("swaybg", "~/.config/hypr/scripts/wallpaper.sh restore")
 end
 
 hl.on("hyprland.start", function() autostart(true) end)
