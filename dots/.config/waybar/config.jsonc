@@ -74,10 +74,12 @@
   // The button the laptop needed: while it is on, hypridle neither dims,
   // locks nor suspends. waybar handles the inhibit itself, no script.
   //
-  // The icon shows the state of the BUTTON, not the state of sleep: struck
-  // through and dim means the lock is off, solid and amber means it is on.
-  // Reading it the other way round - crossed zzz for "will not sleep" - is
-  // what it did first, and it was unreadable at a glance.
+  // The icon shows what sleep is doing, and the colour shows whether that is
+  // the normal state: a plain "zzz" in grey means the laptop sleeps as usual,
+  // a struck-through one in white means something is holding it awake.
+  //
+  // Both halves carry the same meaning, which is the point - the strike says
+  // "no sleep" and the brightness says "this is not the default".
   //
   // U+F04B2 and U+F04B3 are a drawn pair, the same "zzz" with and without a
   // diagonal strike, so the two states read as one thing switching rather
@@ -87,8 +89,8 @@
   "idle_inhibitor": {
     "format": "{icon}",
     "format-icons": {
-      "activated": "<span size='17250'>󰒲</span>",
-      "deactivated": "<span size='17250'>󰒳</span>"
+      "activated": "<span size='17250'>󰒳</span>",
+      "deactivated": "<span size='17250'>󰒲</span>"
     },
     "tooltip-format-activated": "Staying awake - click to allow sleep",
     "tooltip-format-deactivated": "Sleeps normally - click to stay awake"

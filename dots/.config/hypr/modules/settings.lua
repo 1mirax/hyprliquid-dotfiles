@@ -35,6 +35,12 @@ hl.config({
       -- what keeps light text readable over a bright wallpaper.
       vibrancy_darkness = 0.4,
     },
+    -- How much the dimaround rule darkens by. Only the two fuzzel layer rules
+    -- in modules/rules.lua use it, so this is effectively the launcher's dim.
+    -- Hyprland's default is 0.4, which buried the desktop rather than pushing
+    -- it back.
+    dim_around = 0.25,
+
     shadow = {
       enabled = true,
       range = 22,
