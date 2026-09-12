@@ -120,13 +120,14 @@ hl.bind(mod .. " + CTRL + SHIFT + R", hl.dsp.exec_cmd("hyprctl reload"), { descr
 -- without it a held key keeps climbing with nothing to stop it. Lowering needs
 -- no limit; zero is one. waybar's own max-volume is set to 150 to match, or
 -- scrolling the icon would still stop at 100.
--- Through scripts/volume.sh rather than wpctl directly: it does the same call
--- and then shows the level in mako, with a progress fill behind it. The
--- ceiling and step live in that script now, so they are set in one place.
-hl.bind("XF86AudioMute", hl.dsp.exec_cmd("~/.config/hypr/scripts/volume.sh mute"), { locked = true, description = "Media: Mute" })
-hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("~/.config/hypr/scripts/volume.sh up"), { locked = true, repeating = true, description = "Media: Volume up" })
-hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("~/.config/hypr/scripts/volume.sh down"), { locked = true, repeating = true, description = "Media: Volume down" })
-hl.bind("XF86AudioMicMute", hl.dsp.exec_cmd("~/.config/hypr/scripts/volume.sh mic"), { locked = true, description = "Media: Mute microphone" })
+-- Through scripts/osd.sh rather than wpctl and brightnessctl directly: it
+-- makes the same call and then shows the level in mako with a progress fill
+-- behind it. Step, ceiling and the brightness floor live in that script, so
+-- each is set in one place rather than repeated across six binds.
+hl.bind("XF86AudioMute", hl.dsp.exec_cmd("~/.config/hypr/scripts/osd.sh mute"), { locked = true, description = "Media: Mute" })
+hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("~/.config/hypr/scripts/osd.sh vol-up"), { locked = true, repeating = true, description = "Media: Volume up" })
+hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("~/.config/hypr/scripts/osd.sh vol-down"), { locked = true, repeating = true, description = "Media: Volume down" })
+hl.bind("XF86AudioMicMute", hl.dsp.exec_cmd("~/.config/hypr/scripts/osd.sh mic"), { locked = true, description = "Media: Mute microphone" })
 
 hl.bind(mod .. " + A", hl.dsp.exec_cmd("~/.config/hypr/scripts/audio-menu.sh"),
   { description = "Media: Audio devices" })
@@ -139,5 +140,5 @@ hl.bind(mod .. " + SHIFT + A", hl.dsp.exec_cmd("~/.config/hypr/scripts/audio-pro
 hl.bind("XF86AudioPlay", hl.dsp.exec_cmd("playerctl play-pause"), { locked = true, description = "Media: Play / pause" })
 hl.bind("XF86AudioNext", hl.dsp.exec_cmd("playerctl next"), { locked = true, description = "Media: Next track" })
 hl.bind("XF86AudioPrev", hl.dsp.exec_cmd("playerctl previous"), { locked = true, description = "Media: Previous track" })
-hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd("brightnessctl set 5%+"), { locked = true, repeating = true, description = "Display: Brighter" })
-hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("brightnessctl set 5%-"), { locked = true, repeating = true, description = "Display: Dimmer" })
+hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd("~/.config/hypr/scripts/osd.sh bright-up"), { locked = true, repeating = true, description = "Display: Brighter" })
+hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("~/.config/hypr/scripts/osd.sh bright-down"), { locked = true, repeating = true, description = "Display: Dimmer" })

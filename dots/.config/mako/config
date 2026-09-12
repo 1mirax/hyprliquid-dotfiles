@@ -9,8 +9,13 @@ padding=21,24
 border-size=3
 border-radius=18
 
-# Waybar dark glass: rgba(20,20,24,0.35) = #14141859
-background-color=#14141859
+# Kitty's surface: background #14141a at background_opacity 0.72, which is
+# 0xB8. Notifications and the terminal are the same dark glass.
+#
+# fuzzel's white veil (ffffff10) was tried here and fails: on a pale wallpaper
+# white-on-white leaves the plate invisible. fuzzel gets away with it because
+# it dims the desktop behind itself; a notification cannot.
+background-color=#14141ab8
 text-color=#f5f5f7ff
 border-color=#ffffff40
 progress-color=over #ffffff26
@@ -53,18 +58,39 @@ text-color=#ffffffff
 background-color=#2a1416cc
 default-timeout=0
 
-# Volume and brightness readouts from scripts/volume.sh. They are a glance,
+# Volume and brightness readouts from scripts/osd.sh. They are a glance,
 # not a message: one line, no icon, gone in a second, and kept out of history
 # so the log is not three hundred volume steps.
 #
 # The progress fill comes from the int:value hint the script sends -
 # progress-color above was already set and simply had nothing feeding it.
-[app-name=volume]
+[app-name=osd]
 format=<b>%s</b>
-height=90
-width=340
-padding=14,20
+font=Inter 15
+height=64
+# Lines the left edge up with the first "|" separator in the bar's right
+# group, measured off a screenshot rather than guessed.
+#
+# The alignment is tied to what modules-right holds and how wide each module
+# is. It has already moved once: giving the battery its watts reading pushed
+# the separator from x=1624 to x=1586, and this went from 290 to 328 to follow.
+# Changing anything in that group means measuring again.
+width=328
+padding=10,16
+# Same 8px the windows keep from the screen edge (general.gaps_out in
+# hypr/modules/settings.lua), so the plate lines up with whatever is under it.
+# The 18px radius it inherits from the top of this file already matches
+# decoration.rounding - the mismatch was only ever the margin.
+margin=8
+border-size=2
 icons=0
+# A lighter dark at the same alpha as the ground, so the filled part reads
+# brighter without the plate changing density across its width.
+#
+# Not white, and no "over" prefix: white blended over the ground is what hazed
+# the fill milky through several attempts, and "over" is what does the
+# blending. Without it the value replaces the background outright.
+progress-color=#2c2c38b8
 default-timeout=1200
 history=0
 group-by=app-name

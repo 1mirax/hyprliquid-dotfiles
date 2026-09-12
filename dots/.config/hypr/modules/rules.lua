@@ -15,6 +15,10 @@ hl.window_rule({ match = { class = ".*" }, idle_inhibit = "fullscreen" })
 -- No blur for waybar: style.css paints it fully opaque, so there is nothing
 -- behind it to see and the blur pass was pure waste - two full-screen shader
 -- passes a frame for pixels that never reach the screen.
+-- ignore_alpha must stay under mako's background alpha or the blur skips the
+-- surface and leaves a plain transparent hole. mako carries 0xB8, 0.72, so
+-- there is plenty of room here - but a lighter theme for it would need this
+-- lowered, which is the trap the launcher rule below also documents.
 hl.layer_rule({ match = { namespace = "notifications" }, blur = true, ignore_alpha = 0.1 })
 -- fuzzel registers as "launcher", not "fuzzel" - verified by watching
 -- hyprctl layers while it was open. A rule matching "fuzzel" never fired.
