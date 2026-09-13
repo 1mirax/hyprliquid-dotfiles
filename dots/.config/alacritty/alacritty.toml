@@ -76,14 +76,11 @@ white   = "#e8e8ec"
 
 # Hotkeys are matched against the character a key produces, so on the `ru`
 # group of kb_layout = us,ru every Ctrl+Shift+<letter> is dead: V is М and C
-# is С. Unlike rio, alacritty exposes scancodes - a decimal number is the
-# physical key, layout be damned - so 47/46 (evdev KEY_V / KEY_C) cover both
-# layouts on their own. The Cyrillic letters are bound too as a belt-and-
-# braces fallback in case the scancode numbering differs on another machine.
+# is С. Binding the Cyrillic letters is the fix, NOT scancodes - a scancode
+# matches the physical key on BOTH layouts, so it fires alongside the built-in
+# Latin binding and pastes twice.
 [keyboard]
 bindings = [
-  { key = 47, mods = "Control|Shift", action = "Paste" },
-  { key = 46, mods = "Control|Shift", action = "Copy" },
   { key = "М", mods = "Control|Shift", action = "Paste" },
   { key = "С", mods = "Control|Shift", action = "Copy" },
 ]
