@@ -187,10 +187,12 @@ do_install() {
 
 Done. Two things this script deliberately leaves to you:
 
-  Packages   Read packages.txt first, then:
-               sudo pacman -S --needed - < packages.txt
-             The two AUR menus at the bottom of that file are optional:
-               yay -S --needed bzmenu-bin pwmenu-bin
+  Packages   Read packages.txt first, then (pacman has no idea what a
+             comment is, so they have to come off before it sees them):
+               sed 's/#.*//' packages.txt | grep -v '^[[:space:]]*$' | \
+                   sudo pacman -S --needed -
+             The three AUR menus at the bottom of that file are optional:
+               yay -S --needed bzmenu-bin pwmenu-bin networkmanager-dmenu-git
 
   Bluetooth  A system unit, so this script does not touch it:
                sudo systemctl enable --now bluetooth

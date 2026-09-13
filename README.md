@@ -1,8 +1,13 @@
 # hyprliquid-dotfiles
 
-An iOS-flavoured "liquid glass" Hyprland setup for a ThinkPad X390 Yoga —
-translucent surfaces, compositor blur, and a bar, launcher and notifications
-that look like one piece rather than three programs.
+An iOS-flavoured "liquid glass" Hyprland setup — translucent surfaces,
+compositor blur, and a bar, launcher and notifications that look like one
+piece rather than three programs.
+
+It is one configuration for every machine, not a variant per host: the monitor
+rule matches whatever the built-in panel is called, and the only genuinely
+hardware-specific part, the undervolt, installs itself as zeros on any CPU but
+the one it was tested on. Developed on a ThinkPad X390 Yoga.
 
 Built on Arch with **Hyprland 0.56.2 and its Lua configuration**, which is the
 unusual part: there is no `hyprland.conf` here, only `hyprland.lua`. The Lua
@@ -28,9 +33,19 @@ differently from every guide you will find — those are all commented in place.
 git clone https://github.com/1mirax/hyprliquid-dotfiles ~/Projects/hyprliquid-dotfiles
 cd ~/Projects/hyprliquid-dotfiles
 
-sudo pacman -S --needed - < packages.txt   # read it first; two optional AUR menus at its end
+# pacman does not understand comments, so strip them before it sees the file
+sed 's/#.*//' packages.txt | grep -v '^[[:space:]]*$' | sudo pacman -S --needed -
+
 ./install.sh --dry-run                     # see exactly what will happen
 ./install.sh
+```
+
+Read `packages.txt` first — three optional AUR menus are listed at its end.
+Two things it cannot do for you:
+
+```sh
+chsh -s /usr/bin/fish                      # the prompt and palette assume fish
+sudo systemctl enable ly@tty2.service      # then pick "Hyprland (uwsm)"
 ```
 
 `install.sh` symlinks everything from `dots/` into `$HOME`, so editing a config

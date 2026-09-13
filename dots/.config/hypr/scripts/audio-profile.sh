@@ -35,7 +35,7 @@ def short(d):
         return "A2DP · " + m.group(1)
     m = re.match(r"Headset Head Unit \(HSP/HFP, codec (.+)\)", d)
     if m:
-        return "HFP · " + m.group(1) + "  (микрофон)"
+        return "HFP · " + m.group(1) + "  (microphone)"
     return d
 
 try:
@@ -69,7 +69,7 @@ list_profiles() {
 }
 
 rows="$(list_profiles)"
-[ -n "$rows" ] || { notify "Audio" "Не удалось прочитать граф PipeWire"; exit 1; }
+[ -n "$rows" ] || { notify "Audio" "Could not read the PipeWire graph"; exit 1; }
 
 # Column 1 shows the profile, 2 the device, 3 carries id:index and is returned.
 choice="$(printf '%s\n' "$rows" |
@@ -81,7 +81,7 @@ choice="$(printf '%s\n' "$rows" |
 dev="${choice%%:*}"; idx="${choice#*:}"
 if wpctl set-profile "$dev" "$idx" 2>/dev/null; then
     label="$(printf '%s\n' "$rows" | grep -F "	$choice" | cut -f1 | sed 's/^..//')"
-    notify "Audio" "${label:-профиль изменён}"
+    notify "Audio" "${label:-profile changed}"
 else
-    notify "Audio" "Не удалось переключить профиль"
+    notify "Audio" "Could not switch the profile"
 fi

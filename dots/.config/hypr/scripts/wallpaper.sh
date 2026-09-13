@@ -86,9 +86,15 @@ scaled() {
 }
 
 list() {
-    find "$WALLDIR" -maxdepth 1 -type f \
-         \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' \) \
-         | sort
+    # 2>/dev/null: on a machine where no wallpaper has been put in place yet
+    # the directory simply does not exist, and that is not an error worth
+    # printing on every login.
+    # `|| true` matters as much as the redirect: with `set -o pipefail` a
+    # failing find makes the whole pipeline fail, and under `set -e` that kills
+    # the script before the caller can check for an empty result.
+    { find "$WALLDIR" -maxdepth 1 -type f \
+           \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' \) \
+           2>/dev/null || true; } | sort
 }
 
 current() {
@@ -104,8 +110,18 @@ MODE=fill
 # The unit runs this: swaybg in the foreground, so systemd owns it and can
 # restart it. Nothing else should call it directly.
 daemon() {
-    local img
-    img="$(scaled "$(current)")"
+    local img src
+    src="$(current)"
+    # A fresh install has no wallpaper yet. Passing an empty -i makes swaybg
+    # exit non-zero, and with Restart=on-failure the unit would then flap every
+    # two seconds for as long as the directory stays empty. A solid fill in the
+    # palette background is a legitimate wallpaper, so the session comes up
+    # looking deliberate and the unit stays up until an image is chosen.
+    if [ -z "$src" ]; then
+        echo "no image in $WALLDIR - falling back to a solid background" >&2
+        exec swaybg -c "#14141a"
+    fi
+    img="$(scaled "$src")"
     exec swaybg -m "$MODE" -i "$img"
 }
 

@@ -14,7 +14,12 @@
 -- Everything sized in pixels below was multiplied by 1.5 to compensate - gaps,
 -- rounding, cursor, shadow - and the same was done across waybar, alacritty,
 -- fuzzel, mako, GTK, hyprlock and the cheatsheet.
-hl.monitor({ output = "eDP-1", mode = "preferred", position = "auto", scale = 1 })
+-- No output name: this rule has to match the built-in panel of whichever
+-- machine the repository is cloned onto, and that is eDP-1 on one laptop and
+-- something else on the next. An empty output is Hyprland's catch-all, so the
+-- same line pins scale 1 everywhere instead of silently falling back to the
+-- automatic fractional scale on a machine whose connector is named otherwise.
+hl.monitor({ output = "", mode = "preferred", position = "auto", scale = 1 })
 
 hl.env("XCURSOR_SIZE", "36")
 hl.env("HYPRCURSOR_SIZE", "36")

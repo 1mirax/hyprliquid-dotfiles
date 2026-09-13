@@ -1,7 +1,11 @@
 # Every package this configuration needs, verified against a working install.
-# Lines starting with # and blank lines are ignored by install.sh.
 #
-#   sudo pacman -S --needed - < packages.txt
+# pacman reads names from stdin but does NOT understand comments, so feeding
+# this file to it directly makes every comment a package name and the whole
+# command fails. Strip them first:
+#
+#   sed 's/#.*//' packages.txt | grep -v '^[[:space:]]*$' | \
+#       sudo pacman -S --needed -
 #
 # Everything above the AUR section is in the official repositories. The two
 # AUR packages at the bottom are the Bluetooth and audio menus; the setup
@@ -42,7 +46,7 @@ wl-clipboard                # wl-copy / wl-paste, cliphist depends on it
 grim
 slurp
 hyprpicker
-playerctl                   # feeds waybar's mpris module
+playerctl                   # the media keys in keybinds.lua drive it
 
 # --- sound --------------------------------------------------------------
 # All four are required. pipewire alone is only the engine: without
@@ -71,6 +75,16 @@ starship
 tlp
 throttled                   # extra/ - undervolt and HWP control for this ThinkPad
 
+# --- what the scripts shell out to --------------------------------------
+# Easy to miss because nothing links against them: they are called by name,
+# so a missing one fails at runtime rather than at install time.
+jq                          # every script that reads `hyprctl -j`
+libnotify                   # notify-send - the OSD, Wi-Fi and wallpaper toasts
+networkmanager              # nmcli, behind the bar's network module
+ffmpeg                      # optional: pre-scales a wallpaper to the panel
+                            # size once, so swaybg decodes a small file on
+                            # every start. Without it the original is used.
+
 # --- libraries the scripts and bar link against -------------------------
 python-gobject              # fix-oversized-icons.py uses GdkPixbuf
 gtk-layer-shell             # waybar needs it
@@ -85,6 +99,14 @@ noto-fonts-emoji
 # --- toolkit support for Wayland ---------------------------------------
 qt5-wayland
 qt6-wayland
+
+# --- login ---------------------------------------------------------------
+# A display manager is not strictly required - `uwsm start hyprland-uwsm.desktop`
+# from a TTY brings the same session up - but it is what runs here:
+#   sudo systemctl enable ly@tty2.service
+# and then pick "Hyprland (uwsm)" at the prompt, not plain "Hyprland", or the
+# daemons fall back to the Lua autostart path.
+ly                          # TUI display manager, one tty, no X
 
 # --- optional -----------------------------------------------------------
 btop                        # what the CPU and RAM modules open on click
