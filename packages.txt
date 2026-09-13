@@ -4,8 +4,11 @@
 # this file to it directly makes every comment a package name and the whole
 # command fails. Strip them first:
 #
-#   sed 's/#.*//' packages.txt | grep -v '^[[:space:]]*$' | \
-#       sudo pacman -S --needed -
+#   sed 's/#.*//' packages.txt | awk 'NF{print $1}' | sudo pacman -S --needed -
+#
+# awk rather than grep: cutting the comment leaves the whitespace that lined it
+# up, and pacman then looks for a package called "swaybg                    ".
+# `NF{print $1}` takes the first field and drops blank lines in one step.
 #
 # Everything above the AUR section is in the official repositories. The two
 # AUR packages at the bottom are the Bluetooth and audio menus; the setup

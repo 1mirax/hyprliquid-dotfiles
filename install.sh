@@ -194,7 +194,7 @@ Done. Two things this script deliberately leaves to you:
 
   Packages   Read packages.txt first, then (pacman has no idea what a
              comment is, so they have to come off before it sees them):
-               sed 's/#.*//' packages.txt | grep -v '^[[:space:]]*$' | \
+               sed 's/#.*//' packages.txt | awk 'NF{print $1}' | \
                    sudo pacman -S --needed -
              The three AUR menus at the bottom of that file are optional:
                yay -S --needed bzmenu-bin pwmenu-bin networkmanager-dmenu-git

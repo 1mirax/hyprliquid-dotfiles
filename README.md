@@ -33,8 +33,8 @@ differently from every guide you will find — those are all commented in place.
 git clone https://github.com/1mirax/hyprliquid-dotfiles ~/Projects/hyprliquid-dotfiles
 cd ~/Projects/hyprliquid-dotfiles
 
-# pacman does not understand comments, so strip them before it sees the file
-sed 's/#.*//' packages.txt | grep -v '^[[:space:]]*$' | sudo pacman -S --needed -
+# pacman understands neither comments nor the whitespace that lined them up
+sed 's/#.*//' packages.txt | awk 'NF{print $1}' | sudo pacman -S --needed -
 
 ./install.sh --dry-run                     # see exactly what will happen
 ./install.sh
@@ -85,8 +85,22 @@ iwctl station wlan0 connect "<SSID>"     # asks for the passphrase
 ping -c1 archlinux.org
 ```
 
-After the reboot, clone the repository again on the installed system and run
-`./install.sh`; alis lays down the system, `install.sh` puts the session on it.
+alis stops at a bootable Arch — base, kernel, video driver, bootloader,
+NetworkManager — and does **not** install the package list. That happens on
+the installed system, along with everything else:
+
+```sh
+sudo pacman -Sy --needed git
+git clone https://github.com/1mirax/hyprliquid-dotfiles ~/Projects/hyprliquid-dotfiles
+cd ~/Projects/hyprliquid-dotfiles
+sed 's/#.*//' packages.txt | awk 'NF{print $1}' | sudo pacman -S --needed -
+./install.sh
+
+sudo bash ~/.config/power/install.sh
+sudo systemctl enable ly@tty2.service bluetooth.service
+chsh -s /usr/bin/fish
+mkdir -p ~/Pictures/wallpapers
+```
 
 ### On a system that already runs
 
