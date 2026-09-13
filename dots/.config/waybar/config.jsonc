@@ -122,14 +122,14 @@
     "interval": 2,
     "format": "󰻠 {usage}%",
     "tooltip-format": "CPU load {usage}%",
-    "on-click": "rio -e btop"
+    "on-click": "kitty -e btop"
   },
 
   "memory": {
     "interval": 2,
     "format": "󰍛 {percentage}%",
     "tooltip-format": "RAM {used:0.1f} / {total:0.1f} GiB",
-    "on-click": "rio -e btop"
+    "on-click": "kitty -e btop"
   },
 
   // hwmon-path-abs is the stable device directory - the hwmonN number under it
@@ -143,7 +143,7 @@
     "critical-threshold": 90,
     "interval": 5,
     "tooltip-format": "Package {temperatureC}°C\nClick for btop",
-    "on-click": "rio -e btop"
+    "on-click": "kitty -e btop"
   },
 
   // Fixed-length on purpose: %d always pads to two digits and %b is always

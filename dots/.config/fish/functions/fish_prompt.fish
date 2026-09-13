@@ -6,10 +6,10 @@
 # around the one thing worth reading.
 #
 # A frosted-glass prompt was tried and cannot be done. A terminal draws glyphs
-# opaque - the config takes six-digit hex, there is no alpha on text - and
-# the dim attribute, the only real blending on offer, mixes toward the
-# background COLOUR rather than toward what is behind the window, so it just
-# yields another grey. A dim-opacity setting tunes how much, not what.
+# opaque - kitty takes six-digit hex, there is no alpha on text - and the dim
+# attribute, the only real blending on offer, mixes toward the background
+# COLOUR rather than toward what is behind the window, so it just yields
+# another grey. kitty's dim_opacity tunes how much, not what.
 #
 # Checked rather than assumed: no terminal exposes alpha on glyphs. Contour's
 # foreground_alpha, which sounds like it, applies to selection and search

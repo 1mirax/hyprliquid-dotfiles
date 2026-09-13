@@ -33,7 +33,7 @@ waybar                      # top bar
 mako                        # notifications
 fuzzel                      # launcher, and the picker behind wallpapers,
                             # clipboard history and the keybind cheatsheet
-rio                         # terminal
+kitty                       # terminal
 nemo                        # file manager
 
 # --- clipboard, capture, media ------------------------------------------

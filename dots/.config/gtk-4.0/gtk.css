@@ -1,4 +1,4 @@
-/* Glass for GTK apps - same colour and alpha as the terminal: #14141a at 0.72.
+/* Glass for GTK apps - same colour and alpha as kitty: #14141a at 0.72.
  * Only surfaces are made translucent; text and icons stay fully opaque, which
  * a window-level opacity rule in Hyprland could not do.
  * The blur behind comes from Hyprland (decoration:blur, ignore_opacity = true).

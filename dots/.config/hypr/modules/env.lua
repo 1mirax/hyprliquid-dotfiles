@@ -1,7 +1,7 @@
 -- Output and environment.
 --
 -- Set before anything else: the scale decides what every pixel value in
--- settings.lua and in waybar, rio, fuzzel and mako is calibrated against.
+-- settings.lua and in waybar, kitty, fuzzel and mako is calibrated against.
 
 -- Native resolution, no scaling. The panel is 13.3" 1920x1080 = 166 DPI, and
 -- Hyprland's automatic scale picks 1.5 for that, which leaves only 1280x720 of
@@ -11,7 +11,7 @@
 -- after opening (see the launcher layer rule).
 --
 -- Everything sized in pixels below was multiplied by 1.5 to compensate - gaps,
--- rounding, cursor, shadow - and the same was done across waybar, rio,
+-- rounding, cursor, shadow - and the same was done across waybar, kitty,
 -- fuzzel, mako, GTK, hyprlock and the cheatsheet.
 hl.monitor({ output = "eDP-1", mode = "preferred", position = "auto", scale = 1 })
 
