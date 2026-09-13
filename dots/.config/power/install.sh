@@ -16,8 +16,23 @@ if [ "$(id -u)" -ne 0 ]; then
     exit 1
 fi
 
-echo "==> Installing packages"
-pacman -S --needed --noconfirm tlp tlp-rdw throttled
+# What this machine is decides how much of the stack applies. TLP is generic
+# and runs anywhere; throttled writes Intel MSRs with package power limits
+# chosen for a 15 W U-series ThinkPad, and its undervolt was found on one
+# specific CPU sample. Neither travels.
+VENDOR="$(cat /sys/class/dmi/id/sys_vendor 2>/dev/null || true)"
+FAMILY="$(cat /sys/class/dmi/id/product_family 2>/dev/null || true)"
+MODEL="$(sed -n 's/^model name[[:space:]]*: //p' /proc/cpuinfo | head -1)"
+TUNED_CPU="i5-8265U"
+
+IS_THINKPAD=0
+case "$VENDOR $FAMILY" in
+    LENOVO*ThinkPad*|*ThinkPad*) IS_THINKPAD=1 ;;
+esac
+
+echo "==> This machine"
+echo "    $VENDOR $FAMILY"
+echo "    $MODEL"
 
 backup_and_copy() {
     local src="$1" dst="$2"
@@ -29,39 +44,68 @@ backup_and_copy() {
     echo "    installed $dst"
 }
 
-# The undervolt in throttled.conf was found on ONE CPU sample by walking the
-# voltage down until the kernel panicked and then backing off. Silicon varies
-# between samples of the same model, let alone between models, and too large a
-# value does not degrade gracefully - it panics or corrupts. So the values are
-# only installed on the CPU they were tested on; anywhere else they are zeroed
-# and throttled still does its useful half, the package power limits.
-TUNED_CPU="i5-8265U"
-THROTTLED_SRC="$SRC/throttled.conf"
-if grep -q "$TUNED_CPU" /proc/cpuinfo; then
-    echo "==> CPU is the $TUNED_CPU these values were tested on: undervolt kept"
+echo "==> Installing packages"
+if [ "$IS_THINKPAD" -eq 1 ]; then
+    pacman -S --needed --noconfirm tlp tlp-rdw throttled
 else
-    THROTTLED_SRC="$(mktemp)"
-    sed -E 's/^(CORE|CACHE|GPU|UNCORE|ANALOGIO):[[:space:]]*-?[0-9]+/\1: 0/' \
-        "$SRC/throttled.conf" >"$THROTTLED_SRC"
-    cat <<WARN
+    pacman -S --needed --noconfirm tlp tlp-rdw
+    echo "    throttled not installed: not a ThinkPad"
+fi
+
+echo "==> Installing configs"
+backup_and_copy "$SRC/tlp.conf" /etc/tlp.conf
+
+if [ "$IS_THINKPAD" -eq 0 ]; then
+    cat <<'WARN'
+
+    Skipping throttled entirely. Its power limits were picked for the 15 W
+    package of a ThinkPad X390 Yoga, and raising a limit above what another
+    machine was designed and cooled for is a thermal problem, not a tuning
+    one. TLP alone still does governors, EPP, ASPM, runtime PM and radio
+    power - the portable part of the stack.
+
+WARN
+else
+    # The undervolt was found on ONE CPU sample by walking the voltage down
+    # until the kernel panicked and then backing off. Silicon varies between
+    # samples of the same model, let alone between models, and too large a
+    # value does not degrade gracefully - it panics or corrupts. So the values
+    # only install on the CPU they were tested on; on another ThinkPad they are
+    # zeroed and throttled still does its useful half, the power limits.
+    THROTTLED_SRC="$SRC/throttled.conf"
+    if grep -q "$TUNED_CPU" /proc/cpuinfo; then
+        echo "==> CPU is the $TUNED_CPU these values were tested on: undervolt kept"
+    else
+        THROTTLED_SRC="$(mktemp)"
+        sed -E 's/^(CORE|CACHE|GPU|UNCORE|ANALOGIO):[[:space:]]*-?[0-9]+/\1: 0/' \
+            "$SRC/throttled.conf" >"$THROTTLED_SRC"
+        cat <<WARN
 
     !!  This is not the $TUNED_CPU the undervolt was tested on:
-    !!      $(sed -n 's/^model name[[:space:]]*: //p' /proc/cpuinfo | head -1)
+    !!      $MODEL
     !!  Installing throttled.conf with every undervolt set to 0. Power limits
     !!  still apply. To tune this machine, run undervolt-test.sh and walk the
     !!  value down yourself - do not copy a number from another laptop.
 
 WARN
+    fi
+    backup_and_copy "$THROTTLED_SRC" /etc/throttled.conf
+    [ "$THROTTLED_SRC" = "$SRC/throttled.conf" ] || rm -f "$THROTTLED_SRC"
 fi
 
-echo "==> Installing configs"
-backup_and_copy "$SRC/tlp.conf" /etc/tlp.conf
-backup_and_copy "$THROTTLED_SRC" /etc/throttled.conf
-[ "$THROTTLED_SRC" = "$SRC/throttled.conf" ] || rm -f "$THROTTLED_SRC"
+echo "==> Letting wheel suspend and reboot without a password"
+# Under uwsm every process lives in user@1000.service rather than the session
+# scope, so polkit may not resolve it to the active seat and refuses outright
+# instead of prompting. hypridle's suspend at the idle timeout needs this too.
+install -m 0644 "$SRC/49-wheel-power.rules" \
+        /etc/polkit-1/rules.d/49-wheel-power.rules
+echo "    installed /etc/polkit-1/rules.d/49-wheel-power.rules"
 
-echo "==> Ensuring the msr module is available (throttled needs it)"
-printf 'msr\n' > /etc/modules-load.d/msr.conf
-modprobe msr || echo "    WARNING: modprobe msr failed - throttled will not work"
+if [ "$IS_THINKPAD" -eq 1 ]; then
+    echo "==> Ensuring the msr module is available (throttled needs it)"
+    printf 'msr\n' > /etc/modules-load.d/msr.conf
+    modprobe msr || echo "    WARNING: modprobe msr failed - throttled will not work"
+fi
 
 echo "==> Leaving the Bluetooth adapter off at boot"
 # One key, edited in place - not a whole-file copy. /etc/bluetooth/main.conf is
@@ -95,11 +139,19 @@ systemctl mask systemd-rfkill.service systemd-rfkill.socket 2>/dev/null || true
 
 echo "==> Enabling services"
 systemctl enable --now tlp.service
-systemctl enable --now throttled.service
+# An `[ ... ] && cmd` one-liner here would end the script under `set -e` the
+# moment the test is false, taking the status report with it.
+if [ "$IS_THINKPAD" -eq 1 ]; then
+    systemctl enable --now throttled.service
+fi
 
 echo
 echo "==> Status"
-systemctl is-active tlp.service throttled.service || true
+if [ "$IS_THINKPAD" -eq 1 ]; then
+    systemctl is-active tlp.service throttled.service || true
+else
+    systemctl is-active tlp.service || true
+fi
 echo
 echo "Done. Useful commands:"
 echo "  sudo tlp-stat -s     # overview"

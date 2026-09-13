@@ -73,7 +73,8 @@ starship
 
 # --- power management (see .config/power/install.sh) --------------------
 tlp
-throttled                   # extra/ - undervolt and HWP control for this ThinkPad
+throttled                   # ThinkPad only - power/install.sh detects the machine
+                            # and skips it entirely anywhere else
 
 # --- what the scripts shell out to --------------------------------------
 # Easy to miss because nothing links against them: they are called by name,

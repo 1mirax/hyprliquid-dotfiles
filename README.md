@@ -48,6 +48,30 @@ chsh -s /usr/bin/fish                      # the prompt and palette assume fish
 sudo systemctl enable ly@tty2.service      # then pick "Hyprland (uwsm)"
 ```
 
+### From a blank disk
+
+`alis/` holds a configuration for [alis](https://github.com/picodotdev/alis)
+that installs Arch the way these machines are installed — no encryption, ext4
+on one disk, no desktop environment, and the package list from `packages.txt`,
+which it reads rather than repeats. From the live image:
+
+```sh
+pacman -Sy --noconfirm git
+git clone https://github.com/1mirax/hyprliquid-dotfiles
+cd hyprliquid-dotfiles/alis
+curl -O https://raw.githubusercontent.com/picodotdev/alis/master/alis.sh
+chmod +x alis.sh && ./alis.sh
+```
+
+**Check `DEVICE` in `alis/alis.conf` before running it.** It is set to `auto`,
+and `PARTITION_MODE="auto"` deletes every partition on whatever that resolves
+to — with the installation USB still plugged in, run `lsblk` and be sure.
+
+After the reboot, clone the repository again on the installed system and run
+`./install.sh`; alis lays down the system, `install.sh` puts the session on it.
+
+### On a system that already runs
+
 `install.sh` symlinks everything from `dots/` into `$HOME`, so editing a config
 in `~/.config` edits this repository and `git status` shows it. Whatever is
 already in the way is moved aside with a timestamp and recorded, and
@@ -57,9 +81,15 @@ It also does the things that are not files: renders `hyprlock.conf` from its
 template, generates small icon variants, and enables the user services.
 
 Packages and the power stack are left to you on purpose — see the notes the
-script prints at the end. **The undervolt values are specific to one CPU
-sample; too large a value panics the kernel.** Read
-`dots/.config/power/throttled.conf` before installing it.
+script prints at the end.
+
+The power installer reads the machine before it writes anything. On a
+ThinkPad it installs TLP and throttled; anywhere else throttled is skipped
+entirely, because its package power limits were chosen for a 15 W chassis and
+raising a limit past what a machine was cooled for is a thermal problem rather
+than a tuning one. **The undervolt goes further still: it installs as zeros on
+any CPU but the one it was walked down to a kernel panic on.** TLP — governors,
+EPP, ASPM, runtime PM, radio power — applies everywhere.
 
 ## Layout
 
@@ -71,6 +101,7 @@ dots/                       everything that gets symlinked into $HOME
   .config/power/            tlp.conf, throttled.conf, and the installer that
                             places them and leaves Bluetooth off at boot
   .local/share/applications/  NoDisplay overrides that hide menu clutter
+alis/                       installing Arch itself on a blank disk
 install.sh                  linking, templates, icons, unit enabling
 packages.txt                every dependency, verified against a working install
 ```
