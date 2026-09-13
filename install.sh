@@ -120,9 +120,14 @@ render_hyprlock() {
     if [ -r "$state" ] && [ -e "$(head -1 "$state")" ]; then
         wall="$(head -1 "$state")"
     else
-        wall="$(find "$HOME/Pictures/wallpapers" -maxdepth 1 -type f \
-                 \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' \) \
-                 2>/dev/null | sort | head -1)"
+        # `|| true` is load-bearing. On a fresh machine ~/Pictures/wallpapers
+        # does not exist yet, find exits non-zero, `set -o pipefail` fails the
+        # whole pipeline, and `set -e` then kills install.sh right here -
+        # silently, in the middle of the run, with the icon step and the unit
+        # enabling never reached. That is exactly how it behaved before.
+        wall="$({ find "$HOME/Pictures/wallpapers" -maxdepth 1 -type f \
+                    \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' \) \
+                    2>/dev/null || true; } | sort | head -1)"
     fi
     if [ -z "$wall" ]; then
         say "   note    no wallpaper in ~/Pictures/wallpapers yet - hyprlock"
