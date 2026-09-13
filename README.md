@@ -63,9 +63,20 @@ curl -O https://raw.githubusercontent.com/picodotdev/alis/master/alis.sh
 chmod +x alis.sh && ./alis.sh
 ```
 
-**Check `DEVICE` in `alis/alis.conf` before running it.** It is set to `auto`,
-and `PARTITION_MODE="auto"` deletes every partition on whatever that resolves
-to — with the installation USB still plugged in, run `lsblk` and be sure.
+**Check `DEVICE` in `alis/alis.conf` before running it.** `PARTITION_MODE="auto"`
+deletes every partition on it, and the installation USB is in the same `lsblk`
+listing. It is pinned to `/dev/mmcblk0` here, which is the eMMC on the machine
+it was written for — change it to the disk you mean.
+
+If the live image has no network yet, `iwctl` brings up Wi-Fi before anything
+else:
+
+```sh
+iwctl station wlan0 scan
+iwctl station wlan0 get-networks
+iwctl station wlan0 connect "<SSID>"     # asks for the passphrase
+ping -c1 archlinux.org
+```
 
 After the reboot, clone the repository again on the installed system and run
 `./install.sh`; alis lays down the system, `install.sh` puts the session on it.
