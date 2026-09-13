@@ -59,9 +59,16 @@ which it reads rather than repeats. From the live image:
 pacman -Sy --noconfirm git
 git clone https://github.com/1mirax/hyprliquid-dotfiles
 cd hyprliquid-dotfiles/alis
-curl -O https://raw.githubusercontent.com/picodotdev/alis/master/alis.sh
-chmod +x alis.sh && ./alis.sh
+./fetch.sh          # downloads alis, keeps the two configs in this repo
+./alis.sh
 ```
+
+`fetch.sh` rather than a plain `curl` of `alis.sh`: alis is a tree, not a
+file — `alis.sh` sources `alis-commons.sh` and `alis-commons.conf` and calls
+into `configs/` and `files/`. Upstream's own `download.sh` brings all of it
+*and* its own `alis.conf`, which would replace this one; `fetch.sh` copies
+everything except the two configs here, then prints `lsblk` and the `DEVICE`
+line so the target disk is the last thing you see before starting.
 
 **Check `DEVICE` in `alis/alis.conf` before running it.** `PARTITION_MODE="auto"`
 deletes every partition on it, and the installation USB is in the same `lsblk`
