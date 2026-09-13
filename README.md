@@ -18,7 +18,7 @@ differently from every guide you will find — those are all commented in place.
 | Bar | waybar, built-in modules only |
 | Launcher | fuzzel — also the wallpaper picker, clipboard history and cheatsheet |
 | Notifications | mako |
-| Terminal | kitty with a cursor trail |
+| Terminal | alacritty |
 | Shell | fish, with its own `simple` prompt and a neutral palette |
 | Power | TLP + throttled, with a tested undervolt |
 

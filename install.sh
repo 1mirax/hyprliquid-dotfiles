@@ -69,7 +69,7 @@ link() {
 DIR_LINKS=(
     .config/hypr
     .config/waybar
-    .config/kitty
+    .config/alacritty
     .config/fuzzel
     .config/mako
     .config/power

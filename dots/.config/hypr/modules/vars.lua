@@ -3,7 +3,7 @@
 -- Deliberately global rather than local: each module is a separate chunk, and
 -- a local here would not be visible from keybinds.lua.
 mod = "SUPER"
-term = "kitty"
+term = "alacritty"
 menu = "fuzzel"
 files = "nemo"
 browser = "firefox"

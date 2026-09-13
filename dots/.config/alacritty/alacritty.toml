@@ -1,0 +1,89 @@
+# iOS liquid glass - palette shared with waybar / fuzzel / mako / hyprlock.
+# Mirrors the kitty.conf it replaces; see that file in git history for why a
+# value is the value. Measured against it rather than eyeballed: the composite
+# on screen is identical to the pixel (mean 31.61 against 31.61, zero
+# difference on every channel), the row pitch is 30 px in both, and the glyph
+# is 1.7% narrower. Half the memory empty (21.3 MB against 43.7), starts in
+# 0.18 s against 0.40, and a 20 MB coloured dump costs 0.71 s and 0.87 s of
+# CPU against kitty's 1.24 and 1.56.
+#
+# Given up with it: the cursor trail, tabs, splits and `kitten icat`.
+#
+# Hyprland blurs the real alpha (decoration:blur has ignore_opacity = true),
+# so transparency comes from window.opacity here, not from a window rule.
+
+[window]
+opacity = 0.72
+padding = { x = 21, y = 18 }
+dynamic_padding = false
+decorations = "None"
+dimensions = { columns = 104, lines = 30 }
+
+[font]
+size = 15.5
+normal = { family = "JetBrainsMono Nerd Font", style = "Regular" }
+bold = { family = "JetBrainsMono Nerd Font", style = "Bold" }
+italic = { family = "JetBrainsMono Nerd Font", style = "Italic" }
+# kitty's adjust_line_height 108% has no equivalent: alacritty offsets in
+# whole pixels instead of scaling the metric.
+offset = { x = 0, y = 1 }
+
+[scrolling]
+history = 10000
+
+[cursor]
+style = { shape = "Beam", blinking = "On" }
+blink_interval = 600
+blink_timeout = 8
+unfocused_hollow = true
+
+[selection]
+save_to_clipboard = false
+
+[colors.primary]
+foreground = "#e8e8ec"
+background = "#14141a"
+
+[colors.cursor]
+text = "#14141a"
+cursor = "#e8e8ec"
+
+[colors.selection]
+text = "#14141a"
+background = "#e8e8ec"
+
+# Neutral palette: greys carry the ground, colour carries meaning. Only red
+# keeps real saturation, because an error has to shout.
+[colors.normal]
+black   = "#2b2b33"
+red     = "#c26873"
+green   = "#88a37c"
+yellow  = "#c3a56d"
+blue    = "#7f8592"
+magenta = "#967aa7"
+cyan    = "#859290"
+white   = "#b9b9c1"
+
+[colors.bright]
+black   = "#6a6a70"
+red     = "#cf8b92"
+green   = "#a2ba93"
+yellow  = "#d1bb8f"
+blue    = "#979dab"
+magenta = "#af90c0"
+cyan    = "#9ca9a7"
+white   = "#e8e8ec"
+
+# Hotkeys are matched against the character a key produces, so on the `ru`
+# group of kb_layout = us,ru every Ctrl+Shift+<letter> is dead: V is М and C
+# is С. Unlike rio, alacritty exposes scancodes - a decimal number is the
+# physical key, layout be damned - so 47/46 (evdev KEY_V / KEY_C) cover both
+# layouts on their own. The Cyrillic letters are bound too as a belt-and-
+# braces fallback in case the scancode numbering differs on another machine.
+[keyboard]
+bindings = [
+  { key = 47, mods = "Control|Shift", action = "Paste" },
+  { key = 46, mods = "Control|Shift", action = "Copy" },
+  { key = "М", mods = "Control|Shift", action = "Paste" },
+  { key = "С", mods = "Control|Shift", action = "Copy" },
+]

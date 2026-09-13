@@ -12,8 +12,8 @@
 /* Solid black, no transparency at all.
  *
  * This is the end of a long walk: 0.35 let a pale wallpaper through entirely,
- * 0.72 matched kitty's numbers but read darker than kitty on screen because
- * the terminal hides most of its own surface under text while the bar is a
+ * 0.72 matched the terminal's numbers but read darker than it on screen
+ * because the terminal hides most of its surface under text while the bar is a
  * thin strip over bare wallpaper, and 0.85 was heavier still. Opaque turned
  * out to be what the bar actually wanted: it gives the top of the screen a
  * clean edge instead of a smear of whatever happens to be behind it.
