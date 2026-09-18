@@ -10,10 +10,12 @@
 # which is the whole point of intercepting a button that used to cut power on
 # its own.
 #
-# Note for whoever wonders why a quick tap does nothing: the embedded
-# controller swallows it. Verified with evtest - a tap emits no input event at
-# all, and a held press emits one 26 microsecond pulse. Nothing in software
-# can see a press the hardware never reports.
+# There is deliberately no timing logic here, and none in logind either: a
+# signal arrives, the menu opens. Hardware decides what counts as a press and
+# the two machines disagree - the ThinkPad's controller swallows a tap
+# entirely (verified with evtest: a tap emits nothing, a held press emits one
+# 26 microsecond pulse), while the other reports every brush. Both end up in
+# the same place here, which is the point.
 set -uo pipefail
 
 PIDFILE="${XDG_RUNTIME_DIR:-/tmp}/hypr-power-menu.pid"
