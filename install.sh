@@ -70,6 +70,7 @@ DIR_LINKS=(
     .config/hypr
     .config/waybar
     .config/alacritty
+    .config/nvim
     .config/fuzzel
     .config/mako
     .config/power
