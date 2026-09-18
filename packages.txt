@@ -100,9 +100,10 @@ throttled                   # ThinkPad only - power/install.sh detects the machi
 jq                          # every script that reads `hyprctl -j`
 libnotify                   # notify-send - the OSD, Wi-Fi and wallpaper toasts
 networkmanager              # nmcli, behind the bar's network module
-ffmpeg                      # optional: pre-scales a wallpaper to the panel
-                            # size once, so swaybg decodes a small file on
-                            # every start. Without it the original is used.
+ffmpeg                      # optional: builds the PNG thumbnails the wallpaper
+                            # picker shows - fuzzel decodes PNG and SVG only,
+                            # and every wallpaper here is a JPEG. Without it
+                            # the picker lists names without images.
 
 # --- libraries the scripts and bar link against -------------------------
 python-gobject              # fix-oversized-icons.py uses GdkPixbuf
