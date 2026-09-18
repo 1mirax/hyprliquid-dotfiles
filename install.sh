@@ -186,6 +186,26 @@ do_install() {
         say "   skip    needs python-gobject"
     fi
 
+    step "btop: let the terminal show through"
+    # One key edited in place rather than a symlinked config. btop.conf holds
+    # 88 settings, and several of them - which boxes are shown, how processes
+    # are sorted - change from inside the running program, so owning the file
+    # would mean a dirty working tree after every keypress in btop.
+    #
+    # theme_background = true makes btop paint its own opaque fill over a
+    # translucent terminal, the same thing neovim does until told otherwise.
+    BTOP_CONF="$HOME/.config/btop/btop.conf"
+    if [ -f "$BTOP_CONF" ]; then
+        if grep -q '^theme_background = true' "$BTOP_CONF"; then
+            [ "$DRY" -eq 1 ] || sed -i 's/^theme_background = true/theme_background = false/' "$BTOP_CONF"
+            say "   set     theme_background = false$([ "$DRY" -eq 1 ] && echo '  (dry run)')"
+        else
+            say "   ok      theme_background already off"
+        fi
+    else
+        say "   skip    no btop.conf yet - run btop once, then re-run this"
+    fi
+
     step "Nemo's \"Open in Terminal\""
     # Nemo asks Cinnamon's gsettings key which terminal to launch, and its
     # default is gnome-terminal - which is not installed here, so the menu
