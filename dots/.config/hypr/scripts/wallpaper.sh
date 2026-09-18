@@ -34,6 +34,7 @@ set -euo pipefail
 WALLDIR="${WALLDIR:-$HOME/Pictures/wallpapers}"
 STATE="$HOME/.config/hypr/wallpaper"
 CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/hypr/wallpapers"
+THUMBS="$CACHE/thumbs"
 
 die() { echo "$*" >&2; exit 1; }
 
@@ -83,6 +84,35 @@ scaled() {
         fi
     fi
     printf '%s\n' "$dst"
+}
+
+# Prints a PNG thumbnail path for the menu, or nothing when one cannot be made.
+#
+# fuzzel draws PNG and SVG only - it links libpng and libresvg and has no JPEG
+# decoder at all - so handing it a .jpg produces a row with no image and no
+# error. Every wallpaper here is a JPEG, which is why the picker showed plain
+# text for as long as it existed.
+#
+# 128px on the long edge: the menu draws them far smaller, and the whole set
+# costs a few hundred kilobytes. Keyed by path and mtime like the scaled cache,
+# so replacing an image regenerates exactly one file.
+thumb() {
+    local src="$1" key dst
+    command -v ffmpeg >/dev/null || return 0
+
+    key="$(printf '%s' "$src" | sha256sum | cut -c1-16)"
+    dst="$THUMBS/$key-$(stat -c %Y "$src" 2>/dev/null).png"
+    [ -s "$dst" ] && { printf '%s\n' "$dst"; return 0; }
+
+    mkdir -p "$THUMBS"
+    find "$THUMBS" -maxdepth 1 -name "$key-*" -delete 2>/dev/null || true
+    if ffmpeg -v error -y -i "$src" \
+              -vf "scale='min(128,iw)':'min(128,ih)':force_original_aspect_ratio=decrease" \
+              "$dst" 2>/dev/null; then
+        printf '%s\n' "$dst"
+    else
+        rm -f "$dst"
+    fi
 }
 
 list() {
@@ -171,9 +201,12 @@ case "${1:-}" in
         ;;
     pick)
         # fuzzel's dmenu protocol accepts an icon after \0icon\x1f, and a plain
-        # file path works there - so the menu shows real thumbnails.
+        # file path works there - but only for PNG and SVG, so what goes after
+        # the separator is the cached thumbnail rather than the wallpaper.
+        # A row whose thumbnail could not be made still lists, just without
+        # the image.
         sel="$(list | while read -r f; do
-                   printf '%s\0icon\x1f%s\n' "$(basename "$f")" "$f"
+                   printf '%s\0icon\x1f%s\n' "$(basename "$f")" "$(thumb "$f")"
                done | fuzzel --dmenu --prompt='wallpaper ' || true)"
         [ -n "$sel" ] || exit 0
         set_wallpaper "$WALLDIR/$sel"
