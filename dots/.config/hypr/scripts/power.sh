@@ -9,6 +9,11 @@
 # Every action is a one-liner; the menu exists to make the choice deliberate,
 # which is the whole point of intercepting a button that used to cut power on
 # its own.
+#
+# Note for whoever wonders why a quick tap does nothing: the embedded
+# controller swallows it. Verified with evtest - a tap emits no input event at
+# all, and a held press emits one 26 microsecond pulse. Nothing in software
+# can see a press the hardware never reports.
 set -uo pipefail
 
 PIDFILE="${XDG_RUNTIME_DIR:-/tmp}/hypr-power-menu.pid"
