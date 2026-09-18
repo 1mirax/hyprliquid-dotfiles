@@ -30,6 +30,32 @@ vim.opt.langmap = table.concat({
   "х[", "ъ]", "Х{", "Ъ}", "э'", "Э\"",
 }, ",")
 
+-- Let the terminal's own background through.
+--
+-- Neovim paints the Normal highlight group across every cell, so by default a
+-- translucent alacritty is covered by an opaque slab the moment nvim starts.
+-- Clearing the background of the groups that tile the window - and only those
+-- - leaves the cells unpainted, and what shows through is the terminal's
+-- 0.72 alpha with Hyprland's blur behind it.
+--
+-- Deliberately not cleared: CursorLine, Visual, Search and friends. Those mark
+-- something, and a mark you can see through is not a mark.
+--
+-- Re-applied on ColorScheme because loading a scheme resets every group, so
+-- doing this once at startup lasts exactly until the first :colorscheme.
+local function transparent()
+  for _, group in ipairs({
+    "Normal", "NormalNC", "NormalFloat", "FloatBorder",
+    "SignColumn", "LineNr", "FoldColumn", "EndOfBuffer",
+    "MsgArea", "TabLine", "TabLineFill", "StatusLine", "StatusLineNC",
+  }) do
+    vim.api.nvim_set_hl(0, group, { bg = "none" })
+  end
+end
+
+vim.api.nvim_create_autocmd("ColorScheme", { callback = transparent })
+vim.schedule(transparent)
+
 -- Minimal comfort, nothing that changes how editing works.
 vim.opt.number = true          -- line numbers, so :42 has something to aim at
 vim.opt.mouse = "a"            -- the mouse still works while the motions do not
