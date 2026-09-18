@@ -56,7 +56,8 @@ if status is-interactive
     abbr -a -- hyprlog 'journalctl --user -u hyprland -f'
 
     # --- Environment ---
-    # Pick whichever editor is actually installed (nvim is not, yet)
+    # nvim when it is there, nano when it is not - a machine mid-install, or
+    # a rescue chroot, still gets a working $EDITOR for `git commit`.
     if command -sq nvim
         set -gx EDITOR nvim
     else

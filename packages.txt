@@ -74,6 +74,17 @@ polkit-gnome                # the authentication agent
 fish
 starship
 
+# --- editing -------------------------------------------------------------
+# Both, on purpose. nvim is the one to work in; nano is the one that is also
+# on every live image and in every rescue chroot, which is exactly where you
+# do not want to be learning modal editing. config.fish picks whichever is
+# installed for $EDITOR.
+neovim
+nano
+ripgrep                     # :Tutor needs neither, a plugin config will
+fd                          # and both are worth having on their own
+unzip
+
 # --- power management (see .config/power/install.sh) --------------------
 tlp
 throttled                   # ThinkPad only - power/install.sh detects the machine
