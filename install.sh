@@ -186,6 +186,24 @@ do_install() {
         say "   skip    needs python-gobject"
     fi
 
+    step "Nemo's \"Open in Terminal\""
+    # Nemo asks Cinnamon's gsettings key which terminal to launch, and its
+    # default is gnome-terminal - which is not installed here, so the menu
+    # entry exists and does nothing. A dconf value, not a file, so install.sh
+    # is the only place it can live.
+    if command -v gsettings >/dev/null && gsettings writable \
+         org.cinnamon.desktop.default-applications.terminal exec >/dev/null 2>&1; then
+        if [ "$DRY" -eq 1 ]; then
+            say "   set     terminal exec = $term  (dry run)"
+        else
+            gsettings set org.cinnamon.desktop.default-applications.terminal exec alacritty
+            gsettings set org.cinnamon.desktop.default-applications.terminal exec-arg "-e"
+            say "   set     terminal exec = alacritty"
+        fi
+    else
+        say "   skip    cinnamon gsettings schema not present"
+    fi
+
     step "User services"
     enable_units
 
