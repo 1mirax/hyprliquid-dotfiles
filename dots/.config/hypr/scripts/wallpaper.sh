@@ -23,12 +23,22 @@
 #
 # Colours are deliberately NOT derived from the image: the glass stays neutral.
 #
-# Oversized images are still downscaled into a cache first, though swaybg frees
-# the decode immediately and no longer needs protecting from it: decoding
-# 5184x3456 costs 586 ms every time the wallpaper is applied, and the cache
-# turns that into a file read. Keyed by source path, mtime and target size, so
-# a new wallpaper pays once. Originals are never modified, and STATE always
-# names the original.
+# The downscale cache buys start-up time, not memory. Measured with swaybg on
+# this machine, same image, original against cached:
+#
+#   5184x3456 (18 MP)   3.1 MB resident, 1.08 s of CPU
+#   1920x1280 cached    3.3 MB resident, 0.41 s of CPU
+#   3840x2160 (8 MP)    3.3 MB resident, 0.44 s of CPU
+#   1920x1080 cached    3.3 MB resident, 0.43 s of CPU
+#
+# Resident memory is identical because swaybg frees the decoded image once it
+# has drawn - what stays is a buffer the size of the screen, whatever it was
+# built from. The CPU is where the size shows, and only past roughly ten
+# megapixels: at 4K the cache saves nothing measurable, at 18 MP it saves two
+# thirds of a second on every apply and every login.
+#
+# Keyed by source path, mtime and target size, so a new wallpaper pays once.
+# Originals are never modified, and STATE always names the original.
 set -euo pipefail
 
 WALLDIR="${WALLDIR:-$HOME/Pictures/wallpapers}"
