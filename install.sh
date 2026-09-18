@@ -194,7 +194,7 @@ do_install() {
     if command -v gsettings >/dev/null && gsettings writable \
          org.cinnamon.desktop.default-applications.terminal exec >/dev/null 2>&1; then
         if [ "$DRY" -eq 1 ]; then
-            say "   set     terminal exec = $term  (dry run)"
+            say "   set     terminal exec = alacritty  (dry run)"
         else
             gsettings set org.cinnamon.desktop.default-applications.terminal exec alacritty
             gsettings set org.cinnamon.desktop.default-applications.terminal exec-arg "-e"
