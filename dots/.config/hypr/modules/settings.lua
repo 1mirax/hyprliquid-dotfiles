@@ -52,7 +52,11 @@ hl.config({
     kb_layout = "us,ru",
     kb_options = "grp:alt_shift_toggle",
     follow_mouse = 1,
-    numlock_by_default = true,
+    -- numlock_by_default is deliberately absent, not false. On a keyboard with
+    -- a real numeric block it saves one keypress per login; on one without it -
+    -- the second machine here - NumLock turns the right-hand letters into a
+    -- numeric overlay, so `u` types 4 and `j` types 1, at every login, until
+    -- you work out what happened. The cost is not symmetric.
     touchpad = {
       natural_scroll = true,
       disable_while_typing = true,
