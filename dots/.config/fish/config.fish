@@ -56,8 +56,10 @@ if status is-interactive
     abbr -a -- hyprlog 'journalctl --user -u hyprland -f'
 
     # --- Environment ---
-    # nvim when it is there, nano when it is not - a machine mid-install, or
-    # a rescue chroot, still gets a working $EDITOR for `git commit`.
+    # nvim when it is there. The fallback is still nano rather than nothing,
+    # for a machine part-way through an install where $EDITOR must resolve to
+    # something for `git commit` - it is no longer in packages.txt, and the
+    # branch simply never fires on a finished system.
     if command -sq nvim
         set -gx EDITOR nvim
     else

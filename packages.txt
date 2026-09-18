@@ -75,12 +75,16 @@ fish
 starship
 
 # --- editing -------------------------------------------------------------
-# Both, on purpose. nvim is the one to work in; nano is the one that is also
-# on every live image and in every rescue chroot, which is exactly where you
-# do not want to be learning modal editing. config.fish picks whichever is
-# installed for $EDITOR.
+# nvim alone. nano was here for one run on the reasoning that it is the editor
+# you meet everywhere - and that turned out to be wrong on the machine it was
+# written for: Arch's `base` carries neither nano nor vi, so a fresh install
+# has no editor at all until one is named here. What IS close to universal on
+# someone else's machine is `vi`, which POSIX requires and which nano is not.
+#
+# So the fallback argument evaporated, and learning vim motions covers the
+# rescue case better than carrying a second editor. The Arch ISO still ships
+# nano if a broken system ever has to be fixed from outside.
 neovim
-nano
 ripgrep                     # :Tutor needs neither, a plugin config will
 fd                          # and both are worth having on their own
 unzip
