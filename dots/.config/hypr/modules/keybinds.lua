@@ -102,6 +102,13 @@ hl.bind(mod .. " + ALT + I", hl.dsp.exec_cmd("~/.config/hypr/scripts/network.sh"
 
 hl.bind(mod .. " + L", hl.dsp.exec_cmd("loginctl lock-session"), { description = "Session: Lock" })
 hl.bind(mod .. " + SHIFT + E", hl.dsp.exit(), { description = "Session: Exit Hyprland" })
+-- The laptop's power button. It only reaches us because .config/power/
+-- install.sh drops HandlePowerKey=ignore into logind - by default logind acts
+-- on the key itself and the machine goes down on a single press, with no menu
+-- and no way to change your mind. `locked` so it still answers on the lock
+-- screen, which is where "I meant to suspend" usually happens.
+hl.bind("XF86PowerOff", hl.dsp.exec_cmd("~/.config/hypr/scripts/power.sh"),
+  { locked = true, description = "Session: Power menu" })
 hl.bind("SUPER + SUPER_L", hl.dsp.exec_cmd("pkill fuzzel || fuzzel"), { release = true })
 hl.bind(mod .. " + CTRL + SHIFT + R", hl.dsp.exec_cmd("hyprctl reload"), { description = "Session: Reload config" })
 

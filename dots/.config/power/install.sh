@@ -93,6 +93,14 @@ WARN
     [ "$THROTTLED_SRC" = "$SRC/throttled.conf" ] || rm -f "$THROTTLED_SRC"
 fi
 
+echo "==> Handing the power button to the session"
+# A drop-in rather than an edit of logind.conf: the main file is systemd's own,
+# it gains options between releases, and a drop-in leaves it untouched while
+# overriding exactly one key.
+install -d -m 0755 /etc/systemd/logind.conf.d
+backup_and_copy "$SRC/logind-power-key.conf" /etc/systemd/logind.conf.d/10-power-key.conf
+echo "    takes effect after a reboot, or: systemctl reload systemd-logind"
+
 echo "==> Letting wheel suspend and reboot without a password"
 # Under uwsm every process lives in user@1000.service rather than the session
 # scope, so polkit may not resolve it to the active seat and refuses outright
