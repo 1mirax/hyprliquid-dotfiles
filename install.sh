@@ -87,22 +87,21 @@ FILE_LINKS=(
     .config/gtk-3.0/gtk.css
     .config/gtk-4.0/settings.ini
     .config/gtk-4.0/gtk.css
-    .config/systemd/user/cliphist-images.service
     .config/systemd/user/wallpaper.service
     .config/systemd/user/polkit-gnome-agent.service
     .gtkrc-2.0
 )
 
 # systemd units that bring the session up. Most ship with their own packages;
-# cliphist-images, polkit-gnome-agent and wallpaper are ours.
+# polkit-gnome-agent and wallpaper are ours.
 #
 # wireplumber and pipewire-pulse are here because installing them is not
 # enough: pipewire.socket starts on its own, but nothing pulls in the session
 # manager, and without it the audio graph comes up holding two dummy nodes and
 # no hardware. That is exactly how this machine ran with no sound at all.
-UNITS=(waybar mako hypridle cliphist
+UNITS=(waybar mako hypridle
        wireplumber pipewire-pulse
-       cliphist-images polkit-gnome-agent wallpaper)
+       polkit-gnome-agent wallpaper)
 
 
 render_hyprlock() {

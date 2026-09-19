@@ -65,7 +65,6 @@ hl.bind("Print", hl.dsp.exec_cmd("grim - | wl-copy"), { description = "Capture: 
 hl.bind(mod .. " + Print", hl.dsp.exec_cmd("grim ~/Pictures/$(date +%Y-%m-%d_%H-%M-%S).png"), { description = "Capture: Screen to file" })
 hl.bind(mod .. " + SHIFT + C", hl.dsp.exec_cmd("hyprpicker -a"), { description = "Capture: Colour picker" })
 
-hl.bind(mod .. " + V", hl.dsp.exec_cmd("cliphist list | " .. menu .. " --dmenu | cliphist decode | wl-copy"), { description = "Clipboard: History" })
 
 hl.bind(mod .. " + N", hl.dsp.exec_cmd("makoctl dismiss -a"), { description = "Notifications: Dismiss all" })
 hl.bind(mod .. " + SHIFT + N", hl.dsp.exec_cmd("makoctl mode -t do-not-disturb"), { description = "Notifications: Do not disturb" })

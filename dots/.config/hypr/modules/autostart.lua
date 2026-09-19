@@ -37,20 +37,14 @@ end
 -- Always probe by process NAME (comm). The sh -c wrapper is named "sh", so it
 -- can never match itself. `pgrep -f` is unusable here: the wrapper's own
 -- cmdline carries the command verbatim, so the probe matched the wrapper and
--- the daemon was skipped forever - that silently killed wl-paste and the
--- polkit agent on every boot. Bracketing a letter does not help, because the
+-- the daemon was skipped forever - that silently killed the polkit agent
+-- on every boot. Bracketing a letter does not help, because the
 -- literal command sits in the same cmdline next to the pattern.
 --
 -- Matching by name also survives an absolute path: dbus activates mako as
 -- /usr/bin/mako, which an anchored `pgrep -f '^mako$'` would miss.
 local function once(name, cmd)
   guard("pgrep -x " .. name, cmd)
-end
-
--- Same binary twice, told apart by an argument. Filtering pgrep's OUTPUT is
--- safe; filtering the process table is not.
-local function once_arg(name, arg, cmd)
-  guard("pgrep -ax " .. name .. " | grep -q -- '" .. arg .. "'", cmd)
 end
 
 -- fresh = true truncates the log, so it only ever holds the current session.
@@ -63,8 +57,6 @@ local function autostart(fresh)
   once("waybar", "waybar")
   once("mako", "mako")
   once("hypridle", "hypridle")
-  once_arg("wl-paste", "--type text", "wl-paste --type text --watch cliphist store")
-  once_arg("wl-paste", "--type image", "wl-paste --type image --watch cliphist store")
 
   -- The wallpaper path lives in ~/.config/hypr/wallpaper, not here. swaybg is
   -- started by the script itself - it has no IPC, so the process is the

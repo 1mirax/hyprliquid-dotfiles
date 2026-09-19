@@ -51,8 +51,7 @@ gvfs-smb                    # Windows/SMB shares. Arch splits gvfs by protocol
                             # folder - it is not the file manager's fault.
 
 # --- clipboard, capture, media ------------------------------------------
-cliphist
-wl-clipboard                # wl-copy / wl-paste, cliphist depends on it
+wl-clipboard                # wl-copy: screenshots and the cheatsheet pipe into it
 grim
 slurp
 hyprpicker
