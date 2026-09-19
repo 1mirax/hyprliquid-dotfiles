@@ -62,13 +62,12 @@ for bat in /sys/class/power_supply/BAT*; do
 
     case $level in
         critical)
-            # urgency=critical is what paints it red in mako, but that rule
-            # also sets default-timeout=0. A timeout sent with the
-            # notification overrides the default (mako has ignore-timeout=0),
-            # so this keeps the colour and still disappears on its own -
-            # nothing to dismiss by hand. Twice the usual 5 s, because it
-            # matters more than a volume bar.
-            notify-send -a battery -u critical -t 10000 "Battery critical — ${pct}%" \
+            # No timeout of its own on purpose. mako styles urgency=critical
+            # red and pins default-timeout=0, and that rule is the whole point:
+            # critical means it stays until acknowledged, here and everywhere
+            # else. An exception for the battery would make the rule mean
+            # nothing. Super+N clears it without reaching for the mouse.
+            notify-send -a battery -u critical "Battery critical — ${pct}%" \
                 "${left}Plug in now."
             ;;
         low)
