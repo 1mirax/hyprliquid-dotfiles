@@ -6,8 +6,8 @@
   // Pinned, not computed. Waybar sizes the bar to its content, so a glyph that
   // falls back to another font - the spinner in a terminal title, an icon the
   // Nerd Font lacks - changes the line box and the whole bar jumps by a pixel.
-  // 38 is what the current content produces; the number only has to be >= that.
-  "height": 38,
+  // 32 is what the current content produces; the number only has to be >= that.
+  "height": 32,
 
   // One flat strip, the way illogical-impulse does it: no per-group islands,
   // groups separated by air rather than by boxes. Only the workspaces keep a
