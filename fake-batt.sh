@@ -14,7 +14,7 @@
 # notify-send.
 set -uo pipefail
 
-STATE="${XDG_RUNTIME_DIR:-/tmp}/battery-watch.level"
+STATE=/home/eclipse/.claude/jobs/5f73b7e3/tmp/batt/level
 CONF=/etc/UPower/UPower.conf
 
 low=20 crit=5                        # upower's own defaults, if the file is gone
@@ -28,7 +28,7 @@ if [[ -r $CONF ]]; then
 fi
 
 shopt -s nullglob
-for bat in /sys/class/power_supply/BAT*; do
+for bat in /home/eclipse/.claude/jobs/5f73b7e3/tmp/batt/BAT*; do
     [[ -r $bat/capacity && -r $bat/status ]] || continue
 
     read -r pct    <"$bat/capacity"
