@@ -101,6 +101,21 @@ install -d -m 0755 /etc/systemd/logind.conf.d
 backup_and_copy "$SRC/logind-power-key.conf" /etc/systemd/logind.conf.d/10-power-key.conf
 echo "    takes effect after a reboot, or: systemctl reload systemd-logind"
 
+echo "==> Keeping the evidence from a hang on resume"
+# Both halves of this are diagnostics for one open bug: waking from suspend
+# sometimes leaves a black screen that only a reboot clears. The machine then
+# goes down by the power button, which is the one shutdown that flushes
+# nothing - so the minutes that would explain it are the minutes that get
+# lost. See README, "Things worth knowing".
+install -d -m 0755 /etc/systemd/journald.conf.d
+backup_and_copy "$SRC/journald-sync.conf" /etc/systemd/journald.conf.d/10-sync.conf
+install -d -m 0755 /usr/local/lib/hyprliquid
+install -m 0755 "$SRC/hypr-resume-log.sh" /usr/local/lib/hyprliquid/hypr-resume-log.sh
+install -m 0644 "$SRC/hypr-resume-log.service" /etc/systemd/system/hypr-resume-log.service
+systemctl daemon-reload
+systemctl enable hypr-resume-log.service
+echo "    snapshots land in ~/.local/state/hypr-resume after every wake"
+
 echo "==> Letting wheel suspend and reboot without a password"
 # Under uwsm every process lives in user@1000.service rather than the session
 # scope, so polkit may not resolve it to the active seat and refuses outright

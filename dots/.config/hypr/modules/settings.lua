@@ -69,6 +69,13 @@ hl.config({
   },
   misc = {
     disable_hyprland_logo = true,
+    -- An escape hatch, not decoration. If hyprlock dies while the session is
+    -- locked, the compositor keeps the lock in place and the screen stays
+    -- black with no way to type a password - a reboot. With this on, a lock
+    -- screen can be put back over it from a TTY:
+    --   Ctrl+Alt+F2, log in, then
+    --   hyprctl --instance 0 dispatch exec hyprlock
+    allow_session_lock_restore = true,
     disable_splash_rendering = true,
     focus_on_activate = true,
     animate_manual_resizes = false,

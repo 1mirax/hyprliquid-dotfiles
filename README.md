@@ -166,6 +166,20 @@ apart by lightness and a faint temperature bias rather than by hue; only red
 keeps real saturation, because an error has to shout. Push any of the sixteen
 colours past roughly 20% saturation and the neutrality is gone.
 
+**Waking from suspend can leave a black screen, and the fix is ordering.**
+The idle rules turn the panel off before the suspend timer fires, so the
+machine went into S3 with its output disabled - and on the way back the
+compositor sometimes stops answering: hyprlock's last frame sits there, input
+does nothing, and the power button is the only way out. `before_sleep_cmd`
+now wakes the output before locking, so sleep is always entered with the
+panel enabled. Two things are in place in case it happens again:
+`misc:allow_session_lock_restore` lets a TTY put a working lock screen back
+over a dead one (`hyprctl --instance 0 dispatch exec hyprlock`) instead of
+needing a reboot, and `power/install.sh` installs a service that copies the
+compositor's log out of `/run` after every wake, into
+`~/.local/state/hypr-resume` - `/run` is wiped by the reboot, which is why
+the interesting log never survived.
+
 **Applications that ship only a 512x512 icon make the launcher slow.** One of
 them cost 34 ms of a 90 ms startup. `fix-oversized-icons.py` finds them all and
 generates small variants under `~/.local/share/icons`.

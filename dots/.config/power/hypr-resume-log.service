@@ -1,0 +1,12 @@
+[Unit]
+Description=Snapshot the Hyprland log after resume
+# The documented way to run something on wake: ordered after the sleep target
+# and pulled in by it, which means "once the system is back".
+After=suspend.target hibernate.target hybrid-sleep.target suspend-then-hibernate.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/lib/hyprliquid/hypr-resume-log.sh
+
+[Install]
+WantedBy=suspend.target hibernate.target hybrid-sleep.target suspend-then-hibernate.target
