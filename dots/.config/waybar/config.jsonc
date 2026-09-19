@@ -3,7 +3,11 @@
   "layer": "top",
   "position": "top",
   "spacing": 0,
-  "height": 3,
+  // Pinned, not computed. Waybar sizes the bar to its content, so a glyph that
+  // falls back to another font - the spinner in a terminal title, an icon the
+  // Nerd Font lacks - changes the line box and the whole bar jumps by a pixel.
+  // 38 is what the current content produces; the number only has to be >= that.
+  "height": 38,
 
   // One flat strip, the way illogical-impulse does it: no per-group islands,
   // groups separated by air rather than by boxes. Only the workspaces keep a
@@ -40,6 +44,23 @@
   },
 
   "hyprland/window": {
+    // fallback="false" keeps Pango from reaching for another font when a title
+    // contains a glyph ours lacks - a spinner, an emoji. Those fonts have taller
+    // line metrics, and since the bar sizes itself to its content, one such
+    // character made the whole strip jump by a pixel or two. The glyph now
+    // draws as an empty box instead, and the height never moves.
+    // Two things at once, both about the bar not changing height.
+    //
+    // Waybar sizes the strip to its content, so a glyph our fonts lack makes
+    // Pango reach for Noto Sans Mono, whose line metrics are taller, and the
+    // whole bar jumps by two pixels. fallback="false" keeps Pango inside our
+    // stack - the glyph draws as an empty box and the height never moves.
+    // Tested: a smaller font-size does not help (the fallback scales with it)
+    // and neither does naming a different fallback family.
+    //
+    // The rewrite then removes the one glyph that would otherwise show as a
+    // box all day: the spinner a terminal puts in its title while a command
+    // runs. U+25D0-25D3 are the four phases of it.
     "format": "{title}",
     "max-length": 42,
     "separate-outputs": true,
