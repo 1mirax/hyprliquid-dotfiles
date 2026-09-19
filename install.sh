@@ -74,6 +74,7 @@ DIR_LINKS=(
     .config/fuzzel
     .config/mako
     .config/power
+    .config/greetd
     .config/networkmanager-dmenu
 )
 
@@ -249,6 +250,10 @@ Done. Two things this script deliberately leaves to you:
 
   Bluetooth  A system unit, so this script does not touch it:
                sudo systemctl enable --now bluetooth
+
+  Login      The greeter is configured but never switched on by a script.
+             Read it, then run it, then follow what it prints:
+               sudo bash ~/.config/greetd/install.sh
 
   Power      The undervolt values are specific to one CPU sample, and too
              large a value panics the kernel. Read .config/power/throttled.conf

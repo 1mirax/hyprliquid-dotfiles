@@ -1,0 +1,38 @@
+# greetd runs on VT 1, which is what the shipped greetd.service already
+# arranges: it declares Conflicts=getty@tty1.service, so the getty and the
+# greeter can never fight over the same terminal. ly sat on VT 2 and needed
+# its own unit template for that. Leaving VT 2 and up to the gettys also means
+# a rescue console is always one Ctrl+Alt+F2 away.
+[terminal]
+vt = 1
+
+# The greeter, running as the unprivileged `greeter` user. This is the whole
+# point of greetd: the part that runs as root does PAM and nothing else, and
+# everything that parses a keystroke or draws a pixel is over here, without
+# privileges.
+#
+# tuigreet and not a graphical greeter, after trying one. gtkgreet under cage
+# works, but every pixel of it is ours to style - it is a bare GTK window with
+# three addressable widgets - and it drags cage and wlroots in for a screen
+# that shows for four seconds. regreet looks better out of the box but pulls
+# accountsservice (another root daemon) and, through the GTK portal, the UPnP
+# stack. Neither trade is worth it for a login prompt.
+#
+# The flags, in order: the date and time above the box; dots instead of the
+# password length; remember who logged in last and what they picked, so the
+# common case is password-and-enter; a narrow container so the box does not
+# stretch across 1920px; and a quiet theme - grey border, grey clock, grey key
+# hints, white only where you type.
+#
+# --cmd is the session, and it must go through uwsm: every unit we ship -
+# waybar, hypridle, the wallpaper, the battery watcher - hangs off the
+# graphical-session.target that uwsm raises. Starting Hyprland directly would
+# come up with none of them.
+#
+# The power commands are spelled out because tuigreet's defaults call
+# `shutdown`, which the unprivileged greeter cannot run. systemctl goes
+# through logind, which allows an active local session to power off without a
+# password.
+[default_session]
+command = "tuigreet --time --time-format '%A, %d %B  %H:%M' --asterisks --asterisks-char '•' --remember --remember-session --width 52 --container-padding 1 --prompt-padding 0 --theme 'border=darkgray;text=white;prompt=white;time=darkgray;action=darkgray;button=white;container=black;input=white' --cmd 'uwsm start -e -D Hyprland hyprland.desktop' --power-shutdown 'systemctl poweroff' --power-reboot 'systemctl reboot'"
+user = "greeter"
