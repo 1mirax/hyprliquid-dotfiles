@@ -114,6 +114,7 @@ install -m 0755 "$SRC/hypr-resume-log.sh" /usr/local/lib/hyprliquid/hypr-resume-
 install -m 0644 "$SRC/hypr-resume-log.service" /etc/systemd/system/hypr-resume-log.service
 systemctl daemon-reload
 systemctl enable hypr-resume-log.service
+systemctl restart systemd-journald.service
 echo "    snapshots land in ~/.local/state/hypr-resume after every wake"
 
 echo "==> Letting wheel suspend and reboot without a password"
