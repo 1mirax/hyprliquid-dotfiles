@@ -33,6 +33,26 @@ fi
 install -m 0644 "$SRC/config.toml" "$DST/config.toml"
 echo "    installed $DST/config.toml"
 
+# tuigreet reads its own file from a fixed path and takes no --config flag,
+# so this one cannot live next to greetd's.
+install -d -m 0755 /etc/tuigreet
+if [ -f /etc/tuigreet/config.toml ] && ! cmp -s "$SRC/tuigreet.toml" /etc/tuigreet/config.toml; then
+    cp -a /etc/tuigreet/config.toml "/etc/tuigreet/config.toml.bak-$STAMP"
+    echo "    backed up /etc/tuigreet/config.toml -> config.toml.bak-$STAMP"
+fi
+install -m 0644 "$SRC/tuigreet.toml" /etc/tuigreet/config.toml
+echo "    installed /etc/tuigreet/config.toml"
+
+# Parsed by tuigreet itself rather than trusted: an unknown key here means a
+# greeter that will not start, and a greeter that will not start means no way
+# to log in. Better to find out now, while ly is still the display manager.
+if tuigreet --dump-config >/dev/null 2>&1; then
+    echo "    tuigreet parses it"
+else
+    echo "    WARNING: tuigreet refused to parse the config - do NOT enable greetd" >&2
+    tuigreet --dump-config 2>&1 | grep -viE "^thread|^note:|panicked" | head -5 >&2
+fi
+
 # Leftovers from the gtkgreet attempt. Harmless, but a stylesheet and a
 # wallpaper sitting in /etc for a greeter that is no longer installed is the
 # kind of thing that confuses the next person reading this machine.

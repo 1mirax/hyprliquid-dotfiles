@@ -1,0 +1,100 @@
+# tuigreet, installed to /etc/tuigreet/config.toml.
+#
+# This file exists because the alternative is a four-hundred character
+# command line inside greetd's config, which can be neither read nor
+# commented. Every key below was taken from `tuigreet --dump-config`, which
+# prints the config equivalent to a set of flags - none of it is guessed.
+
+[session]
+# The session, and it must go through uwsm: every unit we ship - waybar,
+# hypridle, the wallpaper, the battery watcher - hangs off the
+# graphical-session.target that uwsm raises. Starting Hyprland directly
+# would come up with none of them.
+command = "uwsm start -e -D Hyprland hyprland.desktop"
+
+[display]
+show_time = true
+time_format = "%A, %d %B  %H:%M"
+align_greeting = "center"
+
+# Drawn rather than written, because the one thing a console greeter can do
+# that a graphical one cannot is look deliberate in a font it did not choose.
+# Line art, no fill: the same restraint as the rest of the palette.
+greeting = """
+   ╱╲    ╱╲   
+  ╱  ╲  ╱  ╲  
+ ╱ ╱╲ ╲╱ ╱╲ ╲ 
+ ╲ ╲╱ ╱╲ ╲╱ ╱ 
+  ╲  ╱  ╲  ╱  
+   ╲╱    ╲╱   
+
+ h y p r l i q u i d """
+
+[remember]
+# The common case is one person typing one password. Remembering the name
+# and the session turns three fields into one.
+username = true
+session = true
+
+[secret]
+mode = "characters"
+characters = "•"
+
+[layout]
+# Narrow and tight: at width 80 the box stretches across 1920px and stops
+# looking like an object.
+width = 52
+container_padding = 1
+prompt_padding = 0
+
+[layout.widgets.status_bar]
+# The row of F-key hints along the bottom, switched off. The keys still
+# work - F2 command, F3 session, F12 power - the advertisement does not.
+show_reset = false
+show_command = false
+show_session = false
+show_power = false
+show_background = false
+show_session_status = false
+show_caps_lock = false
+
+[theme]
+# Quiet: grey frame, grey clock, white only where you type. The console
+# palette is the kernel's, not ours, so these are named colours rather than
+# our hex values - the greeter runs before anything that could load a theme.
+border = "darkgray"
+container = "black"
+text = "white"
+greet = "white"
+prompt = "white"
+input = "white"
+time = "darkgray"
+action = "darkgray"
+button = "white"
+
+[power]
+# Spelled out because the defaults call `shutdown`, which the unprivileged
+# greeter cannot run. systemctl goes through logind, which lets an active
+# local session power off without a password.
+shutdown = "systemctl poweroff"
+reboot = "systemctl reboot"
+
+[background]
+# Rain, recoloured down to almost nothing: the head is #8b8b93, which is
+# `faint` from the waybar palette, and the tail is a shade off the
+# background. Green was never an option - this palette has one saturated
+# colour and it means "error" - and the brighter greys were not either,
+# once they were on a screen. A login prompt is a place you pass through,
+# so the background should be texture you notice on the second look, not
+# motion that catches the eye on the first. 10 fps for the same reason.
+kind = "matrix"
+fps = 10
+
+[background.matrix]
+head_color = "#8b8b93"
+bright_color = "#3a3a42"
+dim_color = "#141418"
+min_length = 5
+max_length = 14
+min_speed = 0.1
+max_speed = 0.4
