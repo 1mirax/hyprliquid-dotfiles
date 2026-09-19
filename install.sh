@@ -89,6 +89,8 @@ FILE_LINKS=(
     .config/gtk-4.0/gtk.css
     .config/systemd/user/wallpaper.service
     .config/systemd/user/polkit-gnome-agent.service
+    .config/systemd/user/battery-watch.service
+    .config/systemd/user/battery-watch.timer
     .gtkrc-2.0
 )
 
@@ -102,6 +104,11 @@ FILE_LINKS=(
 UNITS=(waybar mako hypridle
        wireplumber pipewire-pulse
        polkit-gnome-agent wallpaper)
+
+# Timers, enabled the same way but by full name - the loop below appends
+# .service to everything in UNITS. Only one so far, and its .service is
+# deliberately NOT in UNITS: the timer is what pulls it in.
+TIMERS=(battery-watch.timer)
 
 
 render_hyprlock() {
@@ -143,8 +150,11 @@ render_hyprlock() {
 }
 
 enable_units() {
-    for u in "${UNITS[@]}"; do
-        if [ -z "$(systemctl --user list-unit-files "$u.service" --no-legend 2>/dev/null)" ]; then
+    local list=()
+    for u in "${UNITS[@]}";  do list+=("$u.service"); done
+    for u in "${TIMERS[@]}"; do list+=("$u"); done
+    for u in "${list[@]}"; do
+        if [ -z "$(systemctl --user list-unit-files "$u" --no-legend 2>/dev/null)" ]; then
             say "   skip    $u (unit not found - package missing?)"
             continue
         fi
@@ -152,12 +162,12 @@ enable_units() {
             say "   enable  $u  (dry run)"
             continue
         fi
-        if systemctl --user is-enabled "$u.service" >/dev/null 2>&1; then
+        if systemctl --user is-enabled "$u" >/dev/null 2>&1; then
             say "   ok      $u already enabled"
             continue
         fi
-        systemctl --user enable "$u.service" >/dev/null
-        record enable "$u.service" ""
+        systemctl --user enable "$u" >/dev/null
+        record enable "$u" ""
         say "   enable  $u"
     done
 }

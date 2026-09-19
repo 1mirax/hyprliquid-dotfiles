@@ -1,0 +1,9 @@
+[Unit]
+Description=Battery low/critical notification
+# Pointless without something to show it, so it dies with the session.
+PartOf=graphical-session.target
+After=graphical-session.target
+
+[Service]
+Type=oneshot
+ExecStart=%h/.config/hypr/scripts/battery-watch.sh

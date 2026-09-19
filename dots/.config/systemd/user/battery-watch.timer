@@ -1,0 +1,13 @@
+[Unit]
+Description=Check the battery level every minute
+PartOf=graphical-session.target
+
+[Timer]
+# A minute is fine: from 20% this machine has over an hour left, and from 5%
+# still several minutes. Anything faster only buys forks.
+OnActiveSec=1min
+OnUnitActiveSec=1min
+AccuracySec=20s
+
+[Install]
+WantedBy=graphical-session.target
