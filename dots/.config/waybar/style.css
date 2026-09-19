@@ -27,7 +27,7 @@
   border-radius: 0;
   min-height: 0;
   font-family: "Inter", "JetBrainsMono Nerd Font Propo";
-  font-size: 15px;
+  font-size: 17px;
 }
 
 /* The radius shows only because the surface is opaque: GTK clips the fill to
@@ -67,7 +67,7 @@ window#waybar.empty #window {
  * wander as the load changes. */
 #cpu, #memory, #temperature {
   color: @muted;
-  font-size: 14px;
+  font-size: 16px;
   padding: 0 3px;
   margin: 0;
   /* Tabular figures: without them Inter's digits have different widths, so
@@ -90,7 +90,7 @@ window#waybar.empty #window {
  * colour, marks the clock as the thing worth reading. */
 #clock {
   color: @muted;
-  font-size: 15px;
+  font-size: 17px;
   font-weight: 600;
   padding: 0 0 0 10px;
   margin: 0;
@@ -103,13 +103,13 @@ window#waybar.empty #window {
 /* Balancing the centre group, measured rather than guessed:
  *
  *   left   60+6  +  60+6  +  60+15                     = 207 px
- *   right  10 (clock pad) + 109 (clock text) + 88      = 207 px
+ *   right  10 (clock pad) + 124 (clock text) + 73       = 207 px
  *
  * The spacer carries the remainder so the clock can sit right next to the
  * pill. An earlier version put all 207 px on the clock's min-width instead,
  * which centred its text inside the box and left an ugly hole between the
  * pill and the time. If the pill drifts, these two sums stopped matching. */
-#custom-balance { min-width: 88px; }
+#custom-balance { min-width: 73px; }
 
 #temperature.critical { color: #c26873; }
 
@@ -118,9 +118,9 @@ window#waybar.empty #window {
  * launcher. */
 #window {
   color: @muted;
-  font-size: 14px;
+  font-size: 16px;
   padding: 0 14px;
-  margin: 3px 0;
+  margin: 4px 0;
   border-left: 1px solid alpha(@foreground, 0.14);
 }
 
@@ -133,7 +133,7 @@ window#waybar.empty #window {
   background-color: alpha(@foreground, 0.07);
   border-radius: 999px;
   padding: 0 4px;
-  margin: 4px 0;
+  margin: 5px 0;
 }
 
 /* Every button emits "ws" alongside its state class, so these rules do not
@@ -142,11 +142,11 @@ window#waybar.empty #window {
  * moves it off centre - the balance arithmetic below depends on it. */
 .ws {
   color: @faint;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 600;
   min-width: 26px;
   padding: 0 4px;
-  margin: 3px 2px;
+  margin: 4px 2px;
   border-radius: 999px;
   transition: background-color 120ms ease-out, color 120ms ease-out;
 }
@@ -206,10 +206,9 @@ window#waybar.empty #window {
  *
  * Fixed width with tabular figures: the battery is last in a right-aligned
  * group, so every digit it gains pushes the whole row leftwards, separators
- * included. 88px covers the widest reading, "100% ↓12W", measured back when
- * the font was 15px - it is 14px now, so the ceiling only got roomier. */
+ * included. 88px covers the widest reading, "100% ↓12W", measured at 15px. */
 #battery {
-  font-size: 14px;
+  font-size: 15px;
   padding: 0 5px;
   min-width: 88px;
   font-feature-settings: "tnum";
@@ -239,7 +238,7 @@ window#waybar.empty #window {
  * punctuation rather than as one more indicator. */
 #custom-sep {
   color: @faint;
-  font-size: 12px;
+  font-size: 13px;
   padding: 0 2px;
   margin: 0;
 }
