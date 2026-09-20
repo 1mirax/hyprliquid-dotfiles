@@ -67,6 +67,26 @@ for stale in "$DST/gtkgreet.css" "$DST/background.jpg" "$DST/environments"; do
 done
 [ "$removed" -eq 1 ] || echo "    nothing to clear"
 
+echo "==> Checking what this machine boots into"
+# greetd's [Install] section is only `Alias=display-manager.service`, with no
+# WantedBy of its own. That alias is pulled by graphical.target - so on a
+# machine whose default target is multi-user.target, enabling greetd does
+# nothing at all: it is enabled, nothing wants it, and the boot ends at a bare
+# console. ly did not have this problem because its unit said
+# WantedBy=multi-user.target outright.
+DEFAULT_TARGET="$(systemctl get-default)"
+if [ "$DEFAULT_TARGET" = "graphical.target" ]; then
+    echo "    default target is graphical.target - greetd will be started"
+else
+    cat <<WARN
+    !!  The default boot target is $DEFAULT_TARGET, not graphical.target.
+    !!  greetd is wanted by graphical.target and by nothing else, so enabling
+    !!  it alone leaves you at a console with no way in. Before switching:
+    !!
+    !!      sudo systemctl set-default graphical.target
+WARN
+fi
+
 cat <<'NEXT'
 
 ==> Done. greetd is configured but NOT enabled.
@@ -82,11 +102,13 @@ cat <<'NEXT'
 
       loginctl activate c1             # back to your session, no root needed
 
-    Happy with it? Make the switch - note there is no --now on the first
+    Happy with it? Make the switch - the first line is what the check above
+    is about, and there is no --now on the second, which
     line, and that is deliberate: ly is the leader of the session you are
     sitting in, so stopping it logs you out on the spot. Disabling it only
     changes what happens at the next boot.
 
+      sudo systemctl set-default graphical.target
       sudo systemctl disable ly@tty2
       sudo systemctl enable greetd
 

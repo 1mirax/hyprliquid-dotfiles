@@ -166,6 +166,14 @@ apart by lightness and a faint temperature bias rather than by hue; only red
 keeps real saturation, because an error has to shout. Push any of the sixteen
 colours past roughly 20% saturation and the neutrality is gone.
 
+**Enabling greetd is not enough to boot into it.** Its unit declares only
+`Alias=display-manager.service` and no `WantedBy`, and that alias is pulled by
+`graphical.target`. This machine's default target was `multi-user.target` -
+where ly used to start, because ly's unit said `WantedBy=multi-user.target`
+outright - so the first boot after the switch ended at a bare console with
+greetd enabled, running, and wanted by nothing. `systemctl set-default
+graphical.target` is the missing half; `greetd/install.sh` now checks for it.
+
 **Waking from suspend left a black screen because a table key was wrong.**
 `hl.dsp.dpms` takes `action`, and hypridle's config passed `status`. An
 unrecognised key is not an error - the dispatcher sees an empty table and
