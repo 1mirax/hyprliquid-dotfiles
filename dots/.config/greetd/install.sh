@@ -82,14 +82,21 @@ cat <<'NEXT'
 
       loginctl activate c1             # back to your session, no root needed
 
-    Happy with it? Make the switch:
+    Happy with it? Make the switch - note there is no --now on the first
+    line, and that is deliberate: ly is the leader of the session you are
+    sitting in, so stopping it logs you out on the spot. Disabling it only
+    changes what happens at the next boot.
 
-      sudo systemctl disable --now ly@tty2
+      sudo systemctl disable ly@tty2
       sudo systemctl enable greetd
 
-    Back out at any point:
+    Back out, same rule:
 
-      sudo systemctl disable --now greetd
-      sudo systemctl enable --now ly@tty2
+      sudo systemctl disable greetd
+      sudo systemctl enable ly@tty2
+
+    If greetd fails at the next boot, VT 1 is where it would have been -
+    switch to another console (Ctrl+Alt+Fn+F2 on this ThinkPad, Fn because
+    the top row sends media keys) and logind will spawn a getty there.
 
 NEXT
