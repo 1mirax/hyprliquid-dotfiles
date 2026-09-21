@@ -16,19 +16,45 @@ command = "uwsm start -e -D Hyprland hyprland.desktop"
 show_time = true
 time_format = "%A, %d %B  %H:%M"
 align_greeting = "center"
+# "Authenticate into archlinux" across the top of the box. The hostname is
+# not worth announcing to whoever opens the lid, and the box needs no caption
+# to explain what a password field is for.
+show_title = false
 
-# Drawn rather than written, because the one thing a console greeter can do
-# that a graphical one cannot is look deliberate in a font it did not choose.
-# Line art, no fill: the same restraint as the rest of the palette.
-greeting = """
-   ╱╲    ╱╲   
-  ╱  ╲  ╱  ╲  
- ╱ ╱╲ ╲╱ ╱╲ ╲ 
- ╲ ╲╱ ╱╲ ╲╱ ╱ 
-  ╲  ╱  ╲  ╱  
-   ╲╱    ╲╱   
-
- h y p r l i q u i d """
+# The BlackArch logo - the Arch mountain with a blade through it, and the
+# hilt drawn as 00 / 11. Lifted from fastfetch, which ships it, rather than
+# copied off a web page: `fastfetch --logo blackarch`.
+#
+# Every line is padded to the same 38 characters on purpose. tuigreet centres
+# the greeting line by line, by each line's own length, so art whose lines
+# end at different columns leans to one side; padding makes per-line centring
+# and block centring the same thing.
+#
+# A literal string, not a basic one, so nothing in the art is read as an
+# escape. This logo has no backslashes today, but the next one might.
+greeting = '''
+                   00                 
+                   11                 
+                  ====                
+                  .//                 
+                 `o//:                
+                `+o//o:               
+               `+oo//oo:              
+               -+oo//oo+:             
+             `/:-:+//ooo+:            
+            `/+++++//+++++:           
+           `/++++++//++++++:          
+          `/+++oooo//ooooooo/`        
+         ./ooosssso//osssssso+`       
+        .oossssso-`//`/ossssss+`      
+       -osssssso.  //  :ssssssso.     
+      :osssssss/   //   osssso+++.    
+     /ossssssss/   //   +ssssooo/-    
+   `/ossssso+/:-   //   -:/+osssso+-  
+  `+sso+:-`        //       `.-/+oso: 
+ `++:.             //            `-/+/
+ .`                /                `/
+'''
 
 [remember]
 # The common case is one person typing one password. Remembering the name
