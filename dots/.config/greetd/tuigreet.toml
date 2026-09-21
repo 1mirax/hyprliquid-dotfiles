@@ -20,31 +20,6 @@ time_format = "%A, %d %B  %H:%M"
 # to explain what a password field is for.
 show_title = false
 
-# A diamond, ten rows, the same shape the glass carries in hyprlock and the
-# launcher. Drawn tall on purpose - a terminal cell is about twice as high as
-# it is wide, so an optically square diamond needs two columns per row, and
-# at two columns the diagonals break into dashes. Solid and tall beats wide
-# and ragged.
-#
-# Lines are padded to equal width: tuigreet centres the greeting line by
-# line, by each line's own length, so ragged ends lean the shape to one side.
-#
-# `greet` is themed darkgray rather than white - a mark should not compete
-# with the field you are meant to type into.
-align_greeting = "center"
-greeting = '''
-    ╱╲    
-   ╱  ╲   
-  ╱    ╲  
- ╱      ╲ 
-╱        ╲
-╲        ╱
- ╲      ╱ 
-  ╲    ╱  
-   ╲  ╱   
-    ╲╱    
-'''
-
 [remember]
 # The common case is one person typing one password. Remembering the name
 # and the session turns three fields into one.
@@ -80,7 +55,7 @@ show_caps_lock = false
 border = "darkgray"
 container = "black"
 text = "white"
-greet = "darkgray"
+greet = "white"
 prompt = "white"
 input = "white"
 time = "darkgray"
