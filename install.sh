@@ -92,6 +92,7 @@ FILE_LINKS=(
     .config/systemd/user/polkit-gnome-agent.service
     .config/systemd/user/battery-watch.service
     .config/systemd/user/battery-watch.timer
+    .config/systemd/user/app-AmneziaVPN@autostart.service.d/after-tray.conf
     .gtkrc-2.0
 )
 
