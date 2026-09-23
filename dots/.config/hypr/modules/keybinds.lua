@@ -148,11 +148,3 @@ hl.bind("XF86AudioNext", hl.dsp.exec_cmd("playerctl next"), { locked = true, des
 hl.bind("XF86AudioPrev", hl.dsp.exec_cmd("playerctl previous"), { locked = true, description = "Media: Previous track" })
 hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd("~/.config/hypr/scripts/osd.sh bright-up"), { locked = true, repeating = true, description = "Display: Brighter" })
 hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("~/.config/hypr/scripts/osd.sh bright-down"), { locked = true, repeating = true, description = "Display: Dimmer" })
-
--- Lid switch: the panel is inside the closed shell, so blank it, but do not
--- let the machine sleep just because it was shut. What decides sleep is
--- logind, and it is told to ignore the lid only on mains power.
-hl.bind("switch:on:Lid Switch", hl.dsp.exec_cmd('hyprctl dispatch \'hl.dsp.dpms({ action = "off" })\''),
-  { locked = true, description = "Lid: closed" })
-hl.bind("switch:off:Lid Switch", hl.dsp.exec_cmd('hyprctl dispatch \'hl.dsp.dpms({ action = "on" })\''),
-  { locked = true, description = "Lid: opened" })
