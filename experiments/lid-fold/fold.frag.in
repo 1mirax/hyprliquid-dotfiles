@@ -1,0 +1,80 @@
+// The desktop folds away with the lid, the way a phone's screen folds shut.
+//
+// A fragment shader cannot rotate a plane in 3D, so this fakes the projection:
+// the image is squeezed into a trapezoid whose far edge is narrower and higher,
+// blurred and darkened as it goes. The reference implementations on macOS and
+// Windows map the frame onto a real 3D quad; the visible result is the same
+// keystone.
+#version 300 es
+precision highp float;
+in vec2 v_texcoord;
+uniform sampler2D tex;
+// Seconds since this shader was applied - it restarts at zero on every
+// re-apply, which is what makes the easing below work without anyone having
+// to know the compositor's clock.
+uniform float time;
+out vec4 fragColor;
+
+// Where the fold was when this shader was installed, and where it is heading.
+// Hyprland gives a screen shader no way to receive a value, so the daemon
+// writes these two numbers into the source and re-applies. That costs a shader
+// compile, so it happens only when the lid has moved enough to matter - and
+// between those moments the easing below carries the picture smoothly instead
+// of stepping, which is what the first version did at seven frames a second.
+const float FROM = __FROM__;
+const float TO   = __TO__;
+const float EASE = 0.28;          // seconds to travel between the two
+
+float fold_now() {
+    float t = clamp(time / EASE, 0.0, 1.0);
+    t = t * t * (3.0 - 2.0 * t);  // smoothstep: no jerk at either end
+    return mix(FROM, TO, t);
+}
+
+void main() {
+    float FOLD = fold_now();
+    vec2 uv = v_texcoord;
+
+    // Perspective. The far edge (top) keeps FAR of its width, and rows in
+    // between interpolate, which is what makes it read as a tilt rather than
+    // a plain scale.
+    float far   = 1.0 - 0.45 * FOLD;
+    float lift  = 0.22 * FOLD;
+    float y     = (uv.y - lift) / (1.0 - lift);
+
+    float width = mix(far, 1.0, clamp(y, 0.0, 1.0));
+    float x     = (uv.x - 0.5) / width + 0.5;
+
+    if (y < 0.0 || y > 1.0 || x < 0.0 || x > 1.0) {
+        fragColor = vec4(0.0, 0.0, 0.0, 1.0);
+        return;
+    }
+
+    vec4 color;
+    if (FOLD < 0.01) {
+        color = texture(tex, vec2(x, y));
+    } else {
+        // Sixteen taps on a golden-angle spiral rather than rings. Rings of
+        // six showed their spokes once the radius grew; a spiral has no two
+        // samples on the same bearing, so the same budget reads as blur
+        // instead of as a pattern. Weighted toward the centre so the image
+        // softens rather than smears.
+        float radius = 0.008 * FOLD * (1.0 + 1.5 * (1.0 - y));
+        vec4 sum = texture(tex, vec2(x, y)) * 1.6;
+        float weight = 1.6;
+        for (int k = 0; k < 16; k++) {
+            float fk = float(k);
+            float a  = 2.39996 * fk;              // golden angle
+            float r  = radius * sqrt((fk + 0.5) / 16.0);
+            vec2 off = vec2(cos(a), sin(a)) * r;
+            float w  = 1.0 - 0.5 * (r / radius);
+            sum    += texture(tex, clamp(vec2(x, y) + off, 0.0, 1.0)) * w;
+            weight += w;
+        }
+        color = sum / weight;
+    }
+
+    // Dim, and a little more toward the far edge.
+    color.rgb *= (1.0 - 0.55 * FOLD) * (1.0 - 0.25 * FOLD * (1.0 - y));
+    fragColor = color;
+}
